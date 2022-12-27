@@ -6,10 +6,11 @@ import bgu.spl.net.srv.Connections;
 import java.util.HashMap;
 import java.util.List;
 
-public class ConnectionsImpl<T> implements Connections<T> {
+public final class ConnectionsImpl<T> implements Connections<T> {
+    private final HashMap<Integer, ConnectionHandler<T>> connections = new HashMap<>();
+    private final HashMap<String, List<Integer>> channels = new HashMap<>();
 
-    HashMap<Integer, ConnectionHandler<T>> connections;
-    HashMap<String, List<Integer>> channels;
+    int nextId = 0;
 
     @Override
     public boolean send(int connectionId, T msg) {
@@ -29,7 +30,11 @@ public class ConnectionsImpl<T> implements Connections<T> {
 
     @Override
     public void disconnect(int connectionId) {
-        if (connections.containsKey(connectionId))
-            connections.remove(connectionId);
+        connections.remove(connectionId);
     }
+
+    public void addConnection(ConnectionHandler<T> connectionHandler) {
+        connections.put(nextId++, connectionHandler);
+    }
+
 }
