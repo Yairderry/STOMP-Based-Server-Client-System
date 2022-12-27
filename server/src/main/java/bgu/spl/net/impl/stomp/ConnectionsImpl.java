@@ -3,19 +3,22 @@ package bgu.spl.net.impl.stomp;
 import bgu.spl.net.srv.ConnectionHandler;
 import bgu.spl.net.srv.Connections;
 
-import java.util.List;
+import java.util.HashMap;
 
-public class ConnectionsImpl implements Connections<String> {
+public class ConnectionsImpl<T> implements Connections<T> {
 
-    List<ConnectionHandler<String>> connections;
+    HashMap<Integer, ConnectionHandler<T>> connections;
 
     @Override
-    public boolean send(int connectionId, String msg) {
-        return false;
+    public boolean send(int connectionId, T msg) {
+        if (connections.containsKey(connectionId)) {
+            connections.get(connectionId).send(msg);
+            return true;
+        }
     }
 
     @Override
-    public void send(String channel, String msg) {
+    public void send(String channel, T msg) {
 
     }
 
@@ -23,5 +26,4 @@ public class ConnectionsImpl implements Connections<String> {
     public void disconnect(int connectionId) {
 
     }
-}
 }

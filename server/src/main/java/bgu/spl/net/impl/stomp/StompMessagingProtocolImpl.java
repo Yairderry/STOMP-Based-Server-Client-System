@@ -9,12 +9,12 @@ public class StompMessagingProtocolImpl implements StompMessagingProtocol {
 
     private boolean shouldTerminate = false;
     private int connectionId;
-    private ConnectionsImpl connections;
+    private Connections<String> connections;
 
     @Override
-    public void start(int connectionId, Connections connections) {
+    public void start(int connectionId, Connections<String> connections) {
         this.connectionId = connectionId;
-        this.connections = (ConnectionsImpl) connections;
+        this.connections = connections;
     }
 
     @Override
@@ -25,40 +25,40 @@ public class StompMessagingProtocolImpl implements StompMessagingProtocol {
             case "CONNECT":
                 error = Frame.isConnectFrame(frame);
                 if (error != null)
-                    connections.send(connectionId, new ErrorFrame(receiptId, Frame.errorBody(frame, error) ).toString());
-                else
-                    connect;
+                    connections.send(connectionId, new ErrorFrame("receiptId", Frame.errorBody(frame, error) ).toString());
+//                else
+//                    connect;
                 break;
             case "SUBSCRIBE":
                 error = Frame.isSubscribeFrame(frame);
                 if (error != null)
-                    connections.send(connectionId, new ErrorFrame(receiptId, Frame.errorBody(frame, error) ).toString());
-                else
-                    subscribe;
+                    connections.send(connectionId, new ErrorFrame("receiptId", Frame.errorBody(frame, error) ).toString());
+//                else
+//                    subscribe;
                 break;
             case "UNSUBSCRIBE":
                 error = Frame.isUnsubscribeFrame(frame);
                 if (error != null)
-                    connections.send(connectionId, new ErrorFrame(receiptId, Frame.errorBody(frame, error) ).toString());
-                else
-                    unsubscribe;
+                    connections.send(connectionId, new ErrorFrame("receiptId", Frame.errorBody(frame, error) ).toString());
+//                else
+//                    unsubscribe;
                 break;
             case "SEND":
                 error = Frame.isSendFrame(frame);
                 if (error != null)
-                    connections.send(connectionId, new ErrorFrame(receiptId, Frame.errorBody(frame, error) ).toString());
-                else
-                    send;
+                    connections.send(connectionId, new ErrorFrame("receiptId", Frame.errorBody(frame, error) ).toString());
+//                else
+//                    send;
                 break;
             case "DISCONNECT":
                 error = Frame.isDisconnectFrame(frame);
                 if (error != null)
-                    connections.send(connectionId, new ErrorFrame(receiptId, Frame.errorBody(frame, error) ).toString());
-                else
-                    disconnect;
+                    connections.send(connectionId, new ErrorFrame("receiptId", Frame.errorBody(frame, error) ).toString());
+//                else
+//                    disconnect;
                 break;
             default:
-                connections.send(connectionId, new ErrorFrame(receiptId, Frame.errorBody(frame, "Invalid command") ).toString());
+                connections.send(connectionId, new ErrorFrame("receiptId", Frame.errorBody(frame, "Invalid command") ).toString());
         }
     }
 
