@@ -1,5 +1,7 @@
 package bgu.spl.net.srv;
 
+import bgu.spl.net.impl.stomp.database.Database;
+
 import java.io.IOException;
 
 public interface Connections<T> {
@@ -10,5 +12,7 @@ public interface Connections<T> {
 
     void disconnect(int connectionId);
 
-    void addClient(ConnectionHandler<T> connectionHandler);
+    void addConnection(ConnectionHandler<T> connectionHandler);
+
+    Database getDB();
 }

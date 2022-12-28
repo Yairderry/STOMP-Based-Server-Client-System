@@ -1,74 +1,79 @@
 package bgu.spl.net.impl.stomp;
 
 import bgu.spl.net.api.StompMessagingProtocol;
+import bgu.spl.net.impl.stomp.frames.ConnectedFrame;
 import bgu.spl.net.impl.stomp.frames.ErrorFrame;
 import bgu.spl.net.impl.stomp.frames.Frame;
 import bgu.spl.net.srv.Connections;
+
+import java.io.Serializable;
+import java.util.HashMap;
 
 public class StompMessagingProtocolImpl implements StompMessagingProtocol {
 
     private boolean shouldTerminate = false;
     private int connectionId;
-    private Connections<Frame> connections;
+    private Connections<Serializable> connections;
 
     @Override
-    public void start(int connectionId, Connections<Frame> connections) {
+    public void start(int connectionId, Connections<Serializable> connections) {
         this.connectionId = connectionId;
         this.connections = connections;
     }
 
     @Override
-    public void process(Frame message) {
-        String error = "";
-        switch (message.getCommand()) {
+    public void process(Serializable message) {
+        Frame frame = (Frame) message;
+        String error = "Invalid command";
+        switch (frame.getCommand()) {
             case "CONNECT":
-                error = Frame.isConnectFrame(message);
+                error = Frame.isConnectFrame(frame);
                 if (error != null)
-                    connections.send(connectionId, new ErrorFrame("receiptId", Frame.errorBody(message, error)));
-//                else
-//                    connect;
+                    connections.send(connectionId, new ErrorFrame("receiptId", Frame.errorBody(frame, error)).toString());
+                else
+                    connect(frame);
                 break;
             case "SUBSCRIBE":
-                error = Frame.isSubscribeFrame(message);
+                error = Frame.isSubscribeFrame(frame);
                 if (error != null)
-                    connections.send(connectionId, new ErrorFrame("receiptId", Frame.errorBody(message, error)));
+                    connections.send(connectionId, new ErrorFrame("receiptId", Frame.errorBody(frame, error)).toString());
 //                else
 //                    subscribe;
                 break;
             case "UNSUBSCRIBE":
-                error = Frame.isUnsubscribeFrame(message);
+                error = Frame.isUnsubscribeFrame(frame);
                 if (error != null)
-                    connections.send(connectionId, new ErrorFrame("receiptId", Frame.errorBody(message, error)));
+                    connections.send(connectionId, new ErrorFrame("receiptId", Frame.errorBody(frame, error)));
 //                else
 //                    unsubscribe;
                 break;
             case "SEND":
-                error = Frame.isSendFrame(message);
+                error = Frame.isSendFrame(frame);
                 if (error != null)
-                    connections.send(connectionId, new ErrorFrame("receiptId", Frame.errorBody(message, error)));
+                    connections.send(connectionId, new ErrorFrame("receiptId", Frame.errorBody(frame, error)));
 //                else
 //                    send;
                 break;
             case "DISCONNECT":
-                error = Frame.isDisconnectFrame(message);
+                error = Frame.isDisconnectFrame(frame);
                 if (error != null)
-                    connections.send(connectionId, new ErrorFrame("receiptId", Frame.errorBody(message, error)));
+                    connections.send(connectionId, new ErrorFrame("receiptId", Frame.errorBody(frame, error)));
 //                else
 //                    disconnect;
                 break;
             default:
-                connections.send(connectionId, new ErrorFrame("receiptId", Frame.errorBody(message, "Invalid command")));
+                connections.send(connectionId, new ErrorFrame("receiptId", Frame.errorBody(frame, error)));
         }
     }
 
-//    private void connect(String version, String host) {
-//        if (version.equals("1.2") && host.equals("stomp.cs.bgu.ac.il")) {
-//            connections.addClient(connectionId);
-//            connections.send(connectionId, "CONNECTED\nversion:1.2\n\n\0");
-//        } else {
-//            connections.send(connectionId, "ERROR\nmessage:Wrong version or host\n\n\0");
-//        }
-//    }
+    private void connect(Frame frame) {
+        HashMap<String, String> headers = frame.getHeaders();
+        String message = connections.getDB().tryAddUser(headers.get("login"), headers.get("passcode"), connectionId);
+        if (!message.equals("Login successful"))
+            connections.send(connectionId, new ErrorFrame("receiptId", Frame.errorBody(frame, message)));
+        else
+            connections.send(connectionId, new ConnectedFrame());
+    }
 //
 //    private void subscribe(String destination, String id, String receipt) {
 //        if (connections.subscribe(destination, id, connectionId)) {

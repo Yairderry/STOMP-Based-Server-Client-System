@@ -46,7 +46,7 @@ public abstract class BaseServer<T> implements Server<T> {
                         encdecFactory.get(),
                         protocolFactory.get());
 
-                connections.addClient(handler);
+                connections.addConnection(handler);
 
                 execute(handler);
             }
@@ -63,7 +63,4 @@ public abstract class BaseServer<T> implements Server<T> {
     }
 
     protected abstract void execute(BlockingConnectionHandler<T>  handler);
-    protected abstract void execute(NonBlockingConnectionHandler<T>  handler);
-
-
 }

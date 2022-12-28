@@ -1,5 +1,6 @@
 package bgu.spl.net.impl.stomp;
 
+import bgu.spl.net.impl.rci.ObjectEncoderDecoder;
 import bgu.spl.net.srv.Server;
 
 public class StompServer {
@@ -10,8 +11,8 @@ public class StompServer {
             return;
         }
         if (args[1].equals("tpc"))
-            Server.threadPerClient(Integer.parseInt(args[0]), StompMessagingProtocolImpl::new, MessageEncoderDecoderImpl::new).serve();
+            Server.threadPerClient(Integer.parseInt(args[0]), StompMessagingProtocolImpl::new, ObjectEncoderDecoder::new).serve();
         else if (args[1].equals("reactor"))
-            Server.reactor(Runtime.getRuntime().availableProcessors(), Integer.parseInt(args[0]), StompMessagingProtocolImpl::new, MessageEncoderDecoderImpl::new).serve();
+            Server.reactor(Runtime.getRuntime().availableProcessors(), Integer.parseInt(args[0]), StompMessagingProtocolImpl::new, ObjectEncoderDecoder::new).serve();
     }
 }

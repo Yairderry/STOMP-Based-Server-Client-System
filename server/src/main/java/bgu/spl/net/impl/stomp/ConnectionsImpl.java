@@ -1,5 +1,7 @@
 package bgu.spl.net.impl.stomp;
 
+import bgu.spl.net.impl.stomp.database.Database;
+import bgu.spl.net.impl.stomp.database.User;
 import bgu.spl.net.srv.ConnectionHandler;
 import bgu.spl.net.srv.Connections;
 
@@ -7,10 +9,12 @@ import java.util.HashMap;
 import java.util.List;
 
 public final class ConnectionsImpl<T> implements Connections<T> {
-    private final HashMap<Integer, ConnectionHandler<T>> connections = new HashMap<>();
-    private final HashMap<String, List<Integer>> channels = new HashMap<>();
 
-    int nextId = 0;
+    private final HashMap<Integer, ConnectionHandler<T>> connections = new HashMap<>();
+
+    private final Database db = new Database();
+
+    int nextConnectionId = 0;
 
     @Override
     public boolean send(int connectionId, T msg) {
@@ -23,9 +27,10 @@ public final class ConnectionsImpl<T> implements Connections<T> {
 
     @Override
     public void send(String channel, T msg) {
-        if (channels.containsKey(channel))
-            for (Integer connectionId : channels.get(channel))
-                connections.get(connectionId).send(msg);
+        List<User> channelUsers = db.getChannel(channel);
+        if (channelUsers != null)
+            for (User user : channelUsers)
+                connections.get(user.getConnectionId()).send(msg);
     }
 
     @Override
@@ -33,8 +38,12 @@ public final class ConnectionsImpl<T> implements Connections<T> {
         connections.remove(connectionId);
     }
 
-    public void addClient(ConnectionHandler<T> connectionHandler) {
-        connections.put(nextId++, connectionHandler);
+    public void addConnection(ConnectionHandler<T> connectionHandler) {
+        connections.put(nextConnectionId++, connectionHandler);
+    }
+
+    public Database getDB() {
+        return db;
     }
 
 }
