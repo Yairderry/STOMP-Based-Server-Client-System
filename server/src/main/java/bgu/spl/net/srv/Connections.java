@@ -10,5 +10,5 @@ public interface Connections<T> {
 
     void disconnect(int connectionId);
 
-    void addConnection(ConnectionHandler<T> connectionHandler);
+    void addClient(ConnectionHandler<T> connectionHandler);
 }

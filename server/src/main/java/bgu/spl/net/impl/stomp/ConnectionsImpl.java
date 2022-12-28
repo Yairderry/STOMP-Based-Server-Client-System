@@ -33,7 +33,7 @@ public final class ConnectionsImpl<T> implements Connections<T> {
         connections.remove(connectionId);
     }
 
-    public void addConnection(ConnectionHandler<T> connectionHandler) {
+    public void addClient(ConnectionHandler<T> connectionHandler) {
         connections.put(nextId++, connectionHandler);
     }
 

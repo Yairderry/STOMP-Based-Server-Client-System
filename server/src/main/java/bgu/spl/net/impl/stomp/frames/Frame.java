@@ -1,5 +1,8 @@
 package bgu.spl.net.impl.stomp.frames;
 
+import bgu.spl.net.impl.rci.Command;
+
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.HashMap;
 
@@ -89,5 +92,4 @@ public class Frame {
             return "destination header is missing";
         return null;
     }
-
 }
