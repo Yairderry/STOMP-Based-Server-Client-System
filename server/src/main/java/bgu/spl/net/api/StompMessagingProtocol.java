@@ -2,7 +2,7 @@ package bgu.spl.net.api;
 
 import bgu.spl.net.srv.Connections;
 
-public interface StompMessagingProtocol {
+public interface StompMessagingProtocol extends MessagingProtocol<String> {
 	/**
 	 * Used to initiate the current client protocol with its personal connection ID and the connections implementation
 	**/
