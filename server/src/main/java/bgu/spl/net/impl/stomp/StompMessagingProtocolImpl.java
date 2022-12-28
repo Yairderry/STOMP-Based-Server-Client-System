@@ -29,40 +29,40 @@ public class StompMessagingProtocolImpl implements StompMessagingProtocol {
             case "CONNECT":
                 error = Frame.isConnectFrame(frame);
                 if (error != null)
-                    connections.send(connectionId, new ErrorFrame("receiptId", Frame.errorBody(frame, error)).toString());
+                    connections.send(connectionId, new ErrorFrame(frame.getHeaders().getOrDefault("receipt-id", null), Frame.errorBody(frame, error)).toString());
                 else
                     connect(frame);
+                break;
+            case "DISCONNECT":
+                error = Frame.isDisconnectFrame(frame);
+                if (error != null)
+                    connections.send(connectionId, new ErrorFrame(frame.getHeaders().getOrDefault("receipt-id", null), Frame.errorBody(frame, error)));
+//                else
+//                    disconnect;
                 break;
             case "SUBSCRIBE":
                 error = Frame.isSubscribeFrame(frame);
                 if (error != null)
-                    connections.send(connectionId, new ErrorFrame("receiptId", Frame.errorBody(frame, error)).toString());
+                    connections.send(connectionId, new ErrorFrame(frame.getHeaders().getOrDefault("receipt-id", null), Frame.errorBody(frame, error)).toString());
 //                else
-//                    subscribe;
+//                    subscribe(frame);
                 break;
             case "UNSUBSCRIBE":
                 error = Frame.isUnsubscribeFrame(frame);
                 if (error != null)
-                    connections.send(connectionId, new ErrorFrame("receiptId", Frame.errorBody(frame, error)));
+                    connections.send(connectionId, new ErrorFrame(frame.getHeaders().getOrDefault("receipt-id", null), Frame.errorBody(frame, error)));
 //                else
 //                    unsubscribe;
                 break;
             case "SEND":
                 error = Frame.isSendFrame(frame);
                 if (error != null)
-                    connections.send(connectionId, new ErrorFrame("receiptId", Frame.errorBody(frame, error)));
+                    connections.send(connectionId, new ErrorFrame(frame.getHeaders().getOrDefault("receipt-id", null), Frame.errorBody(frame, error)));
 //                else
 //                    send;
                 break;
-            case "DISCONNECT":
-                error = Frame.isDisconnectFrame(frame);
-                if (error != null)
-                    connections.send(connectionId, new ErrorFrame("receiptId", Frame.errorBody(frame, error)));
-//                else
-//                    disconnect;
-                break;
             default:
-                connections.send(connectionId, new ErrorFrame("receiptId", Frame.errorBody(frame, error)));
+                connections.send(connectionId, new ErrorFrame(frame.getHeaders().getOrDefault("receipt-id", null), Frame.errorBody(frame, error)));
         }
     }
 
@@ -70,9 +70,13 @@ public class StompMessagingProtocolImpl implements StompMessagingProtocol {
         HashMap<String, String> headers = frame.getHeaders();
         String message = connections.getDB().tryAddUser(headers.get("login"), headers.get("passcode"), connectionId);
         if (!message.equals("Login successful"))
-            connections.send(connectionId, new ErrorFrame("receiptId", Frame.errorBody(frame, message)));
+            connections.send(connectionId, new ErrorFrame(frame.getHeaders().getOrDefault("receipt-id", null), Frame.errorBody(frame, message)));
         else
             connections.send(connectionId, new ConnectedFrame());
+    }
+
+    private void disconnect(Frame frame){
+
     }
 //
 //    private void subscribe(String destination, String id, String receipt) {
