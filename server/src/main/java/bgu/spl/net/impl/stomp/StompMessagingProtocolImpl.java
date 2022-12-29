@@ -12,7 +12,7 @@ import bgu.spl.net.srv.Connections;
 import java.io.Serializable;
 import java.util.HashMap;
 
-public class StompMessagingProtocolImpl implements StompMessagingProtocol {
+public class StompMessagingProtocolImpl implements StompMessagingProtocol<Serializable> {
 
     private boolean shouldTerminate = false;
     private int connectionId;
@@ -63,8 +63,8 @@ public class StompMessagingProtocolImpl implements StompMessagingProtocol {
                 errorMessage = Frame.isSendFrame(frame);
                 if (errorMessage != null)
                     error(frame, errorMessage);
-//               else
-//                   send;
+               else
+                   send(frame);
                 break;
             default:
                 error(frame, errorMessage);
@@ -112,7 +112,7 @@ public class StompMessagingProtocolImpl implements StompMessagingProtocol {
             if (receiptId != null)
                 connections.send(connectionId, new ReceiptFrame(receiptId));
 
-            
+
         }
     }
 //
@@ -132,12 +132,22 @@ public class StompMessagingProtocolImpl implements StompMessagingProtocol {
 //        }
 //    }
 //
-//    private void send(String destination, String receipt, String[] splitMessage) {
-//        String body = "";
-//        for (int i = 1; i < splitMessage.length; i++) {
-//            body += splitMessage[i] + "\n";
-//        }
-//    }
+    private void send(Frame frame) {
+        if (connectedUser == null)
+            error(frame, "User is not connected");
+        else {
+            String channel = frame.getHeaders().get("destination");
+
+
+            // send receipt if needed
+            String receiptId = frame.getHeaders().getOrDefault("receipt-id", null);
+            if (receiptId != null)
+                connections.send(connectionId, new ReceiptFrame(receiptId));
+
+
+        }
+
+    }
 
     private void error(Frame frame, String message) {
         connections.send(connectionId, new ErrorFrame(frame.getHeaders().getOrDefault("receipt-id", null), Frame.errorBody(frame, message)));

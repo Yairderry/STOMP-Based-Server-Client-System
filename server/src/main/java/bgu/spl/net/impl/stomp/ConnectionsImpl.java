@@ -1,5 +1,6 @@
 package bgu.spl.net.impl.stomp;
 
+import bgu.spl.net.api.StompMessagingProtocol;
 import bgu.spl.net.impl.stomp.database.Database;
 import bgu.spl.net.impl.stomp.database.User;
 import bgu.spl.net.srv.ConnectionHandler;
@@ -36,8 +37,9 @@ public final class ConnectionsImpl<T> implements Connections<T> {
         connections.remove(connectionId);
     }
 
-    public void addConnection(ConnectionHandler<T> connectionHandler) {
+    public void addConnection(ConnectionHandler<T> connectionHandler, StompMessagingProtocol<T> protocol) {
         connections.put(nextConnectionId, connectionHandler);
+        protocol.start(nextConnectionId++, this);
     }
 
     public Database getDB() {

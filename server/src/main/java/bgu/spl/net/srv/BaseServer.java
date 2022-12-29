@@ -48,7 +48,7 @@ public abstract class BaseServer<T> implements Server<T> {
                         encdecFactory.get(),
                         protocolFactory.get());
 
-                connections.addConnection(handler);
+                connections.addConnection(handler, (StompMessagingProtocol<T>) handler.getProtocol());
 
                 execute(handler);
             }
