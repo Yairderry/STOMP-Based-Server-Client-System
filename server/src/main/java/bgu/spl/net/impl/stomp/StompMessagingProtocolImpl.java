@@ -1,6 +1,7 @@
 package bgu.spl.net.impl.stomp;
 
 import bgu.spl.net.api.StompMessagingProtocol;
+import bgu.spl.net.impl.stomp.database.Database;
 import bgu.spl.net.impl.stomp.database.User;
 import bgu.spl.net.impl.stomp.frames.ConnectedFrame;
 import bgu.spl.net.impl.stomp.frames.ErrorFrame;
@@ -85,21 +86,22 @@ public class StompMessagingProtocolImpl implements StompMessagingProtocol {
 
     private void disconnect(Frame frame) {
         if (connectedUser == null)
-            connections.send(connectionId, new ErrorFrame(frame.getHeaders().get("receipt-id"), Frame.errorBody(frame, "User is not connected")));
+            error(frame, "User is not connected");
         else {
+            // send receipt
             connections.send(connectionId, new ReceiptFrame(frame.getHeaders().get("receipt-id")));
 
-//        connections.getDB().removeUser(connectedUser);
-//        connections.send(connectionId, new ReceiptFrame(frame.getHeaders().getOrDefault("receipt-id", null)));
-//        connections.disconnect(connectionId);
-//        shouldTerminate = true;
+            // remove user from channels and clear its subscriptions
+            connections.getDB().removeUserFromChannels(connectedUser);
+
+            // disconnect socket
+            connections.disconnect(connectionId);
+            shouldTerminate = true; // TODO: check if this is the right place to set this
+            connectedUser.toggleConnected();
+            connectedUser = null;
+
         }
 
-
-        //TODO:
-
-        //2. remove user from all topics in db
-        //3. toggle user connected to false
     }
 //
 //    private void subscribe(String destination, String id, String receipt) {

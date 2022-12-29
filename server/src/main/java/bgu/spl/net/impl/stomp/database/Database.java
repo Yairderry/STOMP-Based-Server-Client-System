@@ -6,7 +6,10 @@ import java.util.List;
 
 public class Database {
 
+    // key: channel-name , value: list of users subscribed to the channel
     private final HashMap<String, List<User>> channels = new HashMap<>();
+
+    // key: username , value: user
     private final HashMap<String, User> users = new HashMap<>();
 
     public List<User> getChannel(String channel) {
@@ -18,7 +21,7 @@ public class Database {
     }
 
     public String tryAddUser(String username, String passcode, int connectionId) {
-        User user = users.get(username);
+        User user = users.getOrDefault(username, null);
         if (user == null)
             users.put(username, new User(username, passcode, connectionId));
         else if (!user.getPasscode().equals(passcode))
@@ -34,5 +37,11 @@ public class Database {
 
     public User getUser(String username) {
         return users.get(username);
+    }
+
+    public void removeUserFromChannels(User user){
+        for (String channel : user.getSubscriptions().values())
+            channels.get(channel).remove(user);
+        user.clearSubscriptions();
     }
 }
