@@ -1,9 +1,11 @@
 package bgu.spl.net.impl.stomp;
 
 import bgu.spl.net.api.StompMessagingProtocol;
+import bgu.spl.net.impl.stomp.database.User;
 import bgu.spl.net.impl.stomp.frames.ConnectedFrame;
 import bgu.spl.net.impl.stomp.frames.ErrorFrame;
 import bgu.spl.net.impl.stomp.frames.Frame;
+import bgu.spl.net.impl.stomp.frames.ReceiptFrame;
 import bgu.spl.net.srv.Connections;
 
 import java.io.Serializable;
@@ -13,56 +15,58 @@ public class StompMessagingProtocolImpl implements StompMessagingProtocol {
 
     private boolean shouldTerminate = false;
     private int connectionId;
+    private User connectedUser;
     private Connections<Serializable> connections;
 
     @Override
     public void start(int connectionId, Connections<Serializable> connections) {
         this.connectionId = connectionId;
         this.connections = connections;
+        this.connectedUser = null;
     }
 
     @Override
     public void process(Serializable message) {
         Frame frame = (Frame) message;
-        String error = "Invalid command";
+        String errorMessage = "Invalid command";
         switch (frame.getCommand()) {
             case "CONNECT":
-                error = Frame.isConnectFrame(frame);
-                if (error != null)
-                    connections.send(connectionId, new ErrorFrame(frame.getHeaders().getOrDefault("receipt-id", null), Frame.errorBody(frame, error)).toString());
+                errorMessage = Frame.isConnectFrame(frame);
+                if (errorMessage != null)
+                    error(frame, errorMessage);
                 else
                     connect(frame);
                 break;
             case "DISCONNECT":
-                error = Frame.isDisconnectFrame(frame);
-                if (error != null)
-                    connections.send(connectionId, new ErrorFrame(frame.getHeaders().getOrDefault("receipt-id", null), Frame.errorBody(frame, error)));
-//                else
-//                    disconnect;
+                errorMessage = Frame.isDisconnectFrame(frame);
+                if (errorMessage != null)
+                    error(frame, errorMessage);
+                else
+                    disconnect(frame);
                 break;
             case "SUBSCRIBE":
-                error = Frame.isSubscribeFrame(frame);
-                if (error != null)
-                    connections.send(connectionId, new ErrorFrame(frame.getHeaders().getOrDefault("receipt-id", null), Frame.errorBody(frame, error)).toString());
+                errorMessage = Frame.isSubscribeFrame(frame);
+                if (errorMessage != null)
+                    error(frame, errorMessage);
 //                else
 //                    subscribe(frame);
                 break;
             case "UNSUBSCRIBE":
-                error = Frame.isUnsubscribeFrame(frame);
-                if (error != null)
-                    connections.send(connectionId, new ErrorFrame(frame.getHeaders().getOrDefault("receipt-id", null), Frame.errorBody(frame, error)));
-//                else
+                errorMessage = Frame.isUnsubscribeFrame(frame);
+                if (errorMessage != null)
+                    error(frame, errorMessage);
+                else
 //                    unsubscribe;
-                break;
+                    break;
             case "SEND":
-                error = Frame.isSendFrame(frame);
-                if (error != null)
-                    connections.send(connectionId, new ErrorFrame(frame.getHeaders().getOrDefault("receipt-id", null), Frame.errorBody(frame, error)));
-//                else
-//                    send;
+                errorMessage = Frame.isSendFrame(frame);
+                if (errorMessage != null)
+                    error(frame, errorMessage);
+//               else
+//                   send;
                 break;
             default:
-                connections.send(connectionId, new ErrorFrame(frame.getHeaders().getOrDefault("receipt-id", null), Frame.errorBody(frame, error)));
+                error(frame, errorMessage);
         }
     }
 
@@ -70,13 +74,32 @@ public class StompMessagingProtocolImpl implements StompMessagingProtocol {
         HashMap<String, String> headers = frame.getHeaders();
         String message = connections.getDB().tryAddUser(headers.get("login"), headers.get("passcode"), connectionId);
         if (!message.equals("Login successful"))
-            connections.send(connectionId, new ErrorFrame(frame.getHeaders().getOrDefault("receipt-id", null), Frame.errorBody(frame, message)));
-        else
+            error(frame, message);
+        else {
             connections.send(connectionId, new ConnectedFrame());
+
+            // Assign connected user
+            this.connectedUser = connections.getDB().getUser(headers.get("login"));
+        }
     }
 
-    private void disconnect(Frame frame){
+    private void disconnect(Frame frame) {
+        if (connectedUser == null)
+            connections.send(connectionId, new ErrorFrame(frame.getHeaders().get("receipt-id"), Frame.errorBody(frame, "User is not connected")));
+        else {
+            connections.send(connectionId, new ReceiptFrame(frame.getHeaders().get("receipt-id")));
 
+//        connections.getDB().removeUser(connectedUser);
+//        connections.send(connectionId, new ReceiptFrame(frame.getHeaders().getOrDefault("receipt-id", null)));
+//        connections.disconnect(connectionId);
+//        shouldTerminate = true;
+        }
+
+
+        //TODO:
+
+        //2. remove user from all topics in db
+        //3. toggle user connected to false
     }
 //
 //    private void subscribe(String destination, String id, String receipt) {
@@ -101,6 +124,13 @@ public class StompMessagingProtocolImpl implements StompMessagingProtocol {
 //            body += splitMessage[i] + "\n";
 //        }
 //    }
+
+    private void error(Frame frame, String message) {
+        connections.send(connectionId, new ErrorFrame(frame.getHeaders().getOrDefault("receipt-id", null), Frame.errorBody(frame, message)));
+        connections.disconnect(connectionId);
+        shouldTerminate = true;
+//        connectedUser = null;
+    }
 
     @Override
     public boolean shouldTerminate() {

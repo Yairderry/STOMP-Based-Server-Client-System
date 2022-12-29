@@ -31,4 +31,8 @@ public class Database {
         }
         return "Login successful";
     }
+
+    public User getUser(String username) {
+        return users.get(username);
+    }
 }

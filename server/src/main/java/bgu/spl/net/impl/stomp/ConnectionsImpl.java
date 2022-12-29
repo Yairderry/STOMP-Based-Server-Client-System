@@ -11,9 +11,7 @@ import java.util.List;
 public final class ConnectionsImpl<T> implements Connections<T> {
 
     private final HashMap<Integer, ConnectionHandler<T>> connections = new HashMap<>();
-
     private final Database db = new Database();
-
     int nextConnectionId = 0;
 
     @Override
