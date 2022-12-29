@@ -3,6 +3,8 @@ package bgu.spl.net.impl.stomp;
 import bgu.spl.net.impl.rci.ObjectEncoderDecoder;
 import bgu.spl.net.srv.Server;
 
+import java.io.Serializable;
+
 public class StompServer {
 
     public static void main(String[] args) {

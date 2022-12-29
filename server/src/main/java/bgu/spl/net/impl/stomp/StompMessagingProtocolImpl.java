@@ -49,8 +49,8 @@ public class StompMessagingProtocolImpl implements StompMessagingProtocol {
                 errorMessage = Frame.isSubscribeFrame(frame);
                 if (errorMessage != null)
                     error(frame, errorMessage);
-//                else
-//                    subscribe(frame);
+                else
+                    subscribe(frame);
                 break;
             case "UNSUBSCRIBE":
                 errorMessage = Frame.isUnsubscribeFrame(frame);
@@ -101,7 +101,19 @@ public class StompMessagingProtocolImpl implements StompMessagingProtocol {
             connectedUser = null;
 
         }
+    }
 
+    private void subscribe(Frame frame){
+        if (connectedUser == null)
+            error(frame, "User is not connected");
+        else {
+            // send receipt if needed
+            String receiptId = frame.getHeaders().getOrDefault("receipt-id", null);
+            if (receiptId != null)
+                connections.send(connectionId, new ReceiptFrame(receiptId));
+
+            
+        }
     }
 //
 //    private void subscribe(String destination, String id, String receipt) {
