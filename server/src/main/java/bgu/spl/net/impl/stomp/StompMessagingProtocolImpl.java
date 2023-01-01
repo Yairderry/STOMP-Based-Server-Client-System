@@ -12,62 +12,67 @@ import bgu.spl.net.srv.Connections;
 import java.io.Serializable;
 import java.util.HashMap;
 
-public class StompMessagingProtocolImpl implements StompMessagingProtocol<Serializable> {
+public class StompMessagingProtocolImpl implements StompMessagingProtocol<String> {
 
     private boolean shouldTerminate = false;
     private int connectionId;
     private User connectedUser;
-    private Connections<Serializable> connections;
+    private Connections<String> connections;
 
     @Override
-    public void start(int connectionId, Connections<Serializable> connections) {
+    public void start(int connectionId, Connections<String> connections) {
         this.connectionId = connectionId;
         this.connections = connections;
         this.connectedUser = null;
     }
 
     @Override
-    public void process(Serializable message) {
-        Frame frame = (Frame) message;
-        String errorMessage = "Invalid command";
-        switch (frame.getCommand()) {
-            case "CONNECT":
-                errorMessage = Frame.isConnectFrame(frame);
-                if (errorMessage != null)
-                    error(frame, errorMessage);
-                else
-                    connect(frame);
-                break;
-            case "DISCONNECT":
-                errorMessage = Frame.isDisconnectFrame(frame);
-                if (errorMessage != null)
-                    error(frame, errorMessage);
-                else
-                    disconnect(frame);
-                break;
-            case "SUBSCRIBE":
-                errorMessage = Frame.isSubscribeFrame(frame);
-                if (errorMessage != null)
-                    error(frame, errorMessage);
-                else
-                    subscribe(frame);
-                break;
-            case "UNSUBSCRIBE":
-                errorMessage = Frame.isUnsubscribeFrame(frame);
-                if (errorMessage != null)
-                    error(frame, errorMessage);
-                else
-//                    unsubscribe;
+    public void process(String message) {
+        try{
+            Frame frame = new Frame(message);
+            String errorMessage = "Invalid command";
+            switch (frame.getCommand()) {
+                case "CONNECT":
+                    errorMessage = Frame.isConnectFrame(frame);
+                    if (errorMessage != null)
+                        error(frame, errorMessage);
+                    else
+                        connect(frame);
                     break;
-            case "SEND":
-                errorMessage = Frame.isSendFrame(frame);
-                if (errorMessage != null)
+                case "DISCONNECT":
+                    errorMessage = Frame.isDisconnectFrame(frame);
+                    if (errorMessage != null)
+                        error(frame, errorMessage);
+                    else
+                        disconnect(frame);
+                    break;
+                case "SUBSCRIBE":
+                    errorMessage = Frame.isSubscribeFrame(frame);
+                    if (errorMessage != null)
+                        error(frame, errorMessage);
+                    else
+                        subscribe(frame);
+                    break;
+                case "UNSUBSCRIBE":
+                    errorMessage = Frame.isUnsubscribeFrame(frame);
+                    if (errorMessage != null)
+                        error(frame, errorMessage);
+                    else
+//                    unsubscribe;
+                        break;
+                case "SEND":
+                    errorMessage = Frame.isSendFrame(frame);
+                    if (errorMessage != null)
+                        error(frame, errorMessage);
+                    else
+                        send(frame);
+                    break;
+                default:
                     error(frame, errorMessage);
-               else
-                   send(frame);
-                break;
-            default:
-                error(frame, errorMessage);
+            }
+        }
+        catch (Exception e){
+            error(new Frame(), "Something went wrong");
         }
     }
 
@@ -77,7 +82,7 @@ public class StompMessagingProtocolImpl implements StompMessagingProtocol<Serial
         if (!message.equals("Login successful"))
             error(frame, message);
         else {
-            connections.send(connectionId, new ConnectedFrame());
+            connections.send(connectionId, new ConnectedFrame().toString());
 
             // Assign connected user
             this.connectedUser = connections.getDB().getUser(headers.get("login"));
@@ -89,14 +94,14 @@ public class StompMessagingProtocolImpl implements StompMessagingProtocol<Serial
             error(frame, "User is not connected");
         else {
             // send receipt
-            connections.send(connectionId, new ReceiptFrame(frame.getHeaders().get("receipt-id")));
+            connections.send(connectionId, new ReceiptFrame(frame.getHeaders().get("receipt-id")).toString());
 
             // remove user from channels and clear its subscriptions
             connections.getDB().removeUserFromChannels(connectedUser);
 
             // disconnect socket
             connections.disconnect(connectionId);
-            shouldTerminate = true; // TODO: check if this is the right place to set this
+            shouldTerminate = true;
             connectedUser.toggleConnected();
             connectedUser = null;
 
@@ -110,12 +115,12 @@ public class StompMessagingProtocolImpl implements StompMessagingProtocol<Serial
             // send receipt if needed
             String receiptId = frame.getHeaders().getOrDefault("receipt-id", null);
             if (receiptId != null)
-                connections.send(connectionId, new ReceiptFrame(receiptId));
+                connections.send(connectionId, new ReceiptFrame(receiptId).toString());
 
 
         }
     }
-//
+    //
 //    private void subscribe(String destination, String id, String receipt) {
 //        if (connections.subscribe(destination, id, connectionId)) {
 //            connections.send(connectionId, "RECEIPT\nreceipt-id:" + receipt + "\n\n\0");
@@ -142,7 +147,7 @@ public class StompMessagingProtocolImpl implements StompMessagingProtocol<Serial
             // send receipt if needed
             String receiptId = frame.getHeaders().getOrDefault("receipt-id", null);
             if (receiptId != null)
-                connections.send(connectionId, new ReceiptFrame(receiptId));
+                connections.send(connectionId, new ReceiptFrame(receiptId).toString());
 
 
         }
@@ -150,7 +155,11 @@ public class StompMessagingProtocolImpl implements StompMessagingProtocol<Serial
     }
 
     private void error(Frame frame, String message) {
-        connections.send(connectionId, new ErrorFrame(frame.getHeaders().getOrDefault("receipt-id", null), Frame.errorBody(frame, message)));
+        HashMap<String, String> headers = frame.getHeaders();
+        if (headers != null)
+            connections.send(connectionId, new ErrorFrame(frame.getHeaders().getOrDefault("receipt-id", null), Frame.errorBody(frame, message)).toString());
+        else
+            connections.send(connectionId, new ErrorFrame(null, "").toString());
         connections.disconnect(connectionId);
         shouldTerminate = true;
 //        connectedUser = null;

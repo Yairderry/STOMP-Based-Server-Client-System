@@ -1,12 +1,13 @@
 package bgu.spl.net.impl.stomp.frames;
 
 import bgu.spl.net.impl.rci.Command;
+import bgu.spl.net.srv.Server;
 
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.HashMap;
 
-public class Frame implements Serializable{
+public class Frame implements Serializable {
 
     private final String command;
     protected final HashMap<String, String> headers;
@@ -19,22 +20,28 @@ public class Frame implements Serializable{
         this.body = body;
     }
 
-//    public Frame(String frame) {
-//        String[] lines = frame.split("\n");
-//        this.command = lines[0];
-//        this.headers = new HashMap<>();
-//
-//        int startOfBody = 2;
-//        for (int i = 1; i < lines.length; i++) {
-//            if (lines[i].length() == 0) {
-//                startOfBody = i + 1;
-//                break;
-//            }
-//            String[] header = lines[i].split(":");
-//            this.headers.put(header[0], header[1]);
-//        }
-//        this.body = String.join("\n", Arrays.copyOfRange(lines, startOfBody, lines.length - 1));
-//    }
+    public Frame(){
+        this.command = null;
+        this.headers = null;
+        this.body = null;
+    }
+
+    public Frame(String frame) {
+        String[] lines = frame.split("\n");
+        this.command = lines[0];
+        this.headers = new HashMap<>();
+
+        int startOfBody = 2;
+        for (int i = 1; i < lines.length; i++) {
+            if (lines[i].length() == 0) {
+                startOfBody = i + 1;
+                break;
+            }
+            String[] header = lines[i].split(":");
+            this.headers.put(header[0], header[1]);
+        }
+        this.body = String.join("\n", Arrays.copyOfRange(lines, startOfBody, lines.length - 1));
+    }
 
 //    @Override
 //    public String toString() {

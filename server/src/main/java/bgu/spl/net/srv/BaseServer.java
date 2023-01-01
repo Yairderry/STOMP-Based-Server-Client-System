@@ -4,7 +4,6 @@ import bgu.spl.net.api.MessageEncoderDecoder;
 import bgu.spl.net.api.MessagingProtocol;
 import bgu.spl.net.api.StompMessagingProtocol;
 import bgu.spl.net.impl.stomp.ConnectionsImpl;
-import bgu.spl.net.impl.stomp.StompMessagingProtocolImpl;
 
 import java.io.IOException;
 import java.net.ServerSocket;
