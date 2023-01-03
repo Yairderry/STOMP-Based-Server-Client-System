@@ -10,8 +10,8 @@ public class StompServer {
             return;
         }
         if (args[1].equals("tpc"))
-            Server.threadPerClient(Integer.parseInt(args[0]), StompMessagingProtocolImpl::new, LineMessageEncoderDecoder::new).serve();
+            Server.threadPerClient(Integer.parseInt(args[0]), StompMessagingProtocolImpl::new, StompMessageEncoderDecoder::new).serve();
         else if (args[1].equals("reactor"))
-            Server.reactor(Runtime.getRuntime().availableProcessors(), Integer.parseInt(args[0]), StompMessagingProtocolImpl::new, LineMessageEncoderDecoder::new).serve();
+            Server.reactor(Runtime.getRuntime().availableProcessors(), Integer.parseInt(args[0]), StompMessagingProtocolImpl::new, StompMessageEncoderDecoder::new).serve();
     }
 }

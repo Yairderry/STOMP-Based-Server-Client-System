@@ -4,7 +4,7 @@ import bgu.spl.net.api.MessageEncoderDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
-public class LineMessageEncoderDecoder implements MessageEncoderDecoder<String> {
+public class StompMessageEncoderDecoder implements MessageEncoderDecoder<String> {
 
     private byte[] bytes = new byte[1 << 16]; //start with 1k
     private int len = 0;

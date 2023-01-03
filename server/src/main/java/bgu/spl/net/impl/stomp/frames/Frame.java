@@ -1,8 +1,5 @@
 package bgu.spl.net.impl.stomp.frames;
 
-import bgu.spl.net.impl.rci.Command;
-import bgu.spl.net.srv.Server;
-
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -58,6 +55,10 @@ public class Frame implements Serializable {
 
     public HashMap<String, String> getHeaders(){
         return headers;
+    }
+
+    public String getHeader(String header){
+        return headers.getOrDefault(header, null);
     }
 
     public static String errorBody(Frame frame, String bodyMessage) {

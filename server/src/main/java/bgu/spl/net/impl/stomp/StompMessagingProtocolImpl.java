@@ -11,6 +11,7 @@ import bgu.spl.net.srv.Connections;
 
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.List;
 
 public class StompMessagingProtocolImpl implements StompMessagingProtocol<String> {
 
@@ -28,7 +29,7 @@ public class StompMessagingProtocolImpl implements StompMessagingProtocol<String
 
     @Override
     public void process(String message) {
-        try{
+        try {
             Frame frame = new Frame(message);
             String errorMessage = "Invalid command";
             switch (frame.getCommand()) {
@@ -58,7 +59,7 @@ public class StompMessagingProtocolImpl implements StompMessagingProtocol<String
                     if (errorMessage != null)
                         error(frame, errorMessage);
                     else
-//                    unsubscribe;
+                    unsubscribe(frame);
                         break;
                 case "SEND":
                     errorMessage = Frame.isSendFrame(frame);
@@ -70,99 +71,87 @@ public class StompMessagingProtocolImpl implements StompMessagingProtocol<String
                 default:
                     error(frame, errorMessage);
             }
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             error(new Frame(), "Something went wrong");
         }
     }
 
     private void connect(Frame frame) {
-        HashMap<String, String> headers = frame.getHeaders();
-        String message = connections.getDB().tryAddUser(headers.get("login"), headers.get("passcode"), connectionId);
+        String message = connections.getDB().tryAddUser(frame.getHeader("login"), frame.getHeader("passcode"), connectionId);
         if (!message.equals("Login successful"))
             error(frame, message);
         else {
             connections.send(connectionId, new ConnectedFrame().toString());
 
             // Assign connected user
-            this.connectedUser = connections.getDB().getUser(headers.get("login"));
+            this.connectedUser = connections.getDB().getUser(frame.getHeader("login"));
         }
     }
 
     private void disconnect(Frame frame) {
-        if (connectedUser == null)
-            error(frame, "User is not connected");
-        else {
-            // send receipt
-            connections.send(connectionId, new ReceiptFrame(frame.getHeaders().get("receipt-id")).toString());
+        if (!acknowledge(frame))
+            return;
 
-            // remove user from channels and clear its subscriptions
-            connections.getDB().removeUserFromChannels(connectedUser);
+        // remove user from channels and clear its subscriptions
+        connections.getDB().removeUserFromChannels(connectedUser);
 
-            // disconnect socket
-            connections.disconnect(connectionId);
-            shouldTerminate = true;
-            connectedUser.toggleConnected();
-            connectedUser = null;
-
-        }
+        // disconnect socket
+        connections.disconnect(connectionId);
+        shouldTerminate = true;
+        connectedUser.toggleConnected();
+        connectedUser = null;
     }
 
-    private void subscribe(Frame frame){
-        if (connectedUser == null)
-            error(frame, "User is not connected");
-        else {
-            // send receipt if needed
-            String receiptId = frame.getHeaders().getOrDefault("receipt-id", null);
-            if (receiptId != null)
-                connections.send(connectionId, new ReceiptFrame(receiptId).toString());
-
-
-        }
+    private void subscribe(Frame frame) {
+        if (!acknowledge(frame))
+            return;
+        String message = connections.getDB().trySubscribe(frame.getHeader("subscription-id"), frame.getHeader("destination"), connectedUser);
+        if (!message.equals(""))
+            error(frame, message);
     }
-    //
-//    private void subscribe(String destination, String id, String receipt) {
-//        if (connections.subscribe(destination, id, connectionId)) {
-//            connections.send(connectionId, "RECEIPT\nreceipt-id:" + receipt + "\n\n\0");
-//        } else {
-//            connections.send(connectionId, "ERROR\nmessage:Already subscribed to " + destination + "\n\n\0");
-//        }
-//    }
-//
-//    private void unsubscribe(String id) {
-//        if (connections.unsubscribe(id, connectionId)) {
-//            connections.send(connectionId, "RECEIPT\nreceipt-id:" + id + "\n\n\0");
-//        } else {
-//            connections.send(connectionId, "ERROR\nmessage:Not subscribed to " + id + "\n\n\0");
-//        }
-//    }
-//
+
+    private void unsubscribe(Frame frame) {
+        if (!acknowledge(frame))
+            return;
+        String message = connections.getDB().tryUnsubscribe(frame.getHeader("id"), connectedUser);
+        if (!message.equals(""))
+            error(frame, message);
+    }
+
     private void send(Frame frame) {
-        if (connectedUser == null)
-            error(frame, "User is not connected");
-        else {
+        if (!acknowledge(frame))
+            return;
+
             String channel = frame.getHeaders().get("destination");
-
-
-            // send receipt if needed
-            String receiptId = frame.getHeaders().getOrDefault("receipt-id", null);
-            if (receiptId != null)
-                connections.send(connectionId, new ReceiptFrame(receiptId).toString());
-
-
-        }
 
     }
 
     private void error(Frame frame, String message) {
-        HashMap<String, String> headers = frame.getHeaders();
-        if (headers != null)
-            connections.send(connectionId, new ErrorFrame(frame.getHeaders().getOrDefault("receipt-id", null), Frame.errorBody(frame, message)).toString());
+        if (frame.getHeaders() != null)
+            connections.send(connectionId, new ErrorFrame(frame.getHeader("receipt-id"), Frame.errorBody(frame, message)).toString());
         else
             connections.send(connectionId, new ErrorFrame(null, "").toString());
         connections.disconnect(connectionId);
         shouldTerminate = true;
 //        connectedUser = null;
+    }
+
+    private void receipt(Frame frame) {
+        String receiptId = frame.getHeader("receipt-id");
+        if (receiptId != null)
+            connections.send(connectionId, new ReceiptFrame(receiptId).toString());
+    }
+
+    private boolean acknowledge(Frame frame){
+        if (connectedUser == null) {
+            error(frame, "User is not connected");
+            return false;
+        }
+        else {
+            // send receipt if needed
+            receipt(frame);
+            return true;
+        }
     }
 
     @Override

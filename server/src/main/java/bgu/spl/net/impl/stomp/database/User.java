@@ -8,7 +8,7 @@ public class User {
     private boolean connected = true;
 
     // key: subscription id, value: channel name
-    private HashMap<Integer, String> subscriptions;
+    private final HashMap<String, String> subscriptions;
     private int connectionId;
 
     public User(String _username, String _passcode, int _connectionId){
@@ -38,15 +38,15 @@ public class User {
         this.connectionId = _connectionId;
     }
 
-    public void addSubscription(int subscriptionId, String channel){
+    public void addSubscription(String subscriptionId, String channel){
         subscriptions.put(subscriptionId, channel);
     }
 
-    public void removeSubscription(int subscriptionId){
+    public void removeSubscription(String subscriptionId){
         subscriptions.remove(subscriptionId);
     }
 
-    public HashMap<Integer, String> getSubscriptions(){
+    public HashMap<String, String> getSubscriptions(){
         return subscriptions;
     }
 

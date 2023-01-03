@@ -8,6 +8,7 @@ import bgu.spl.net.srv.Connections;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 public final class ConnectionsImpl<T> implements Connections<T> {
 
@@ -26,7 +27,7 @@ public final class ConnectionsImpl<T> implements Connections<T> {
 
     @Override
     public void send(String channel, T msg) {
-        List<User> channelUsers = db.getChannel(channel);
+        Set<User> channelUsers = db.getChannel(channel);
         if (channelUsers != null)
             for (User user : channelUsers)
                 connections.get(user.getConnectionId()).send(msg);

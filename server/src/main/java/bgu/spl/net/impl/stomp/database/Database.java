@@ -1,23 +1,41 @@
 package bgu.spl.net.impl.stomp.database;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 public class Database {
 
     // key: channel-name , value: list of users subscribed to the channel
-    private final HashMap<String, List<User>> channels = new HashMap<>();
+    private final HashMap<String, Set<User>> channels = new HashMap<>();
 
     // key: username , value: user
     private final HashMap<String, User> users = new HashMap<>();
 
-    public List<User> getChannel(String channel) {
+    public Set<User> getChannel(String channel) {
         return channels.getOrDefault(channel, null);
     }
 
     public void addChannel(String channel) {
-        channels.putIfAbsent(channel, new ArrayList<User>());
+        channels.putIfAbsent(channel, new HashSet<User>());
+    }
+
+    public String trySubscribe(String subscriptionId, String channel, User user){
+        channels.putIfAbsent(channel, new HashSet<User>());
+        Set<User> channelUsers = channels.get(channel);
+        if (channelUsers.contains(user))
+            return "User already subscribed to this topic";
+        channelUsers.add(user);
+        user.addSubscription(subscriptionId, channel);
+        return "";
+    }
+
+    public String tryUnsubscribe(String subscriptionId, User user){
+        HashMap<String, String> userSubscriptions = user.getSubscriptions();
+        if (!userSubscriptions.containsKey(subscriptionId))
+            return "Missing subscription id";
+        Set<User> channel = channels.get(userSubscriptions.get(subscriptionId));
+        channel.remove(user);
+        user.removeSubscription(subscriptionId);
+        return "";
     }
 
     public String tryAddUser(String username, String passcode, int connectionId) {
