@@ -72,12 +72,12 @@ public class Frame implements Serializable {
     public static String isConnectFrame(Frame frame) {
         if (!frame.headers.containsKey("accept-version"))
             return "accept-version header is missing";
-        if (frame.headers.get("accept-version").equals("1.2"))
+        if (!frame.headers.get("accept-version").equals("1.2"))
             return "accept-version header is not 1.2";
         if (!frame.headers.containsKey("host"))
             return "host header is missing";
-        if (frame.headers.get("host").equals("1.2"))
-            return "host header is not stomp.cs.bgu.ac.il";
+        // if (!frame.headers.get("host").equals("1.2"))
+        //     return "host header is not stomp.cs.bgu.ac.il";
         if (!frame.headers.containsKey("login"))
             return "login header is missing";
         if (!frame.headers.containsKey("passcode"))

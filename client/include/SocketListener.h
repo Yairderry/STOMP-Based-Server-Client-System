@@ -5,9 +5,9 @@
 class SocketListener
 {
 private:
-    SocketListener *handler;
+    ConnectionHandler *handler;
 
 public:
-    SocketListener(ConnectionHandler *);
+    SocketListener(ConnectionHandler*);
     void run();
 };

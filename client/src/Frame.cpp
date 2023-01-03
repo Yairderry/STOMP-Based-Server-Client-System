@@ -36,11 +36,12 @@ Frame::Frame(const string &frame) {
 string Frame::toString() const {
     string frame = command + '\n';
 
-    for (auto &header : headers) {
+    for (auto &header : headers)
         frame += header.first + ":" + header.second + '\n';
-    }
-
-    frame += '\n' + body + '\n' + endOfLine;
+    
+    if (body != "")
+        frame += body + '\n';
+    frame += endOfLine;
 
     return frame;
 }
@@ -77,7 +78,7 @@ ConnectFrame::ConnectFrame(string &acceptVersion, string &host, string &login, s
     headers["accept-version"] = acceptVersion;
     headers["host"] = host;
     headers["login"] = login;
-    headers["login"] = passcode;
+    headers["passcode"] = passcode;
 }
 
 DisconnectFrame::DisconnectFrame(string &receiptId) : Frame("DISCONNECT", map<string, string>{}, ""){

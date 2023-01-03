@@ -6,9 +6,21 @@
 
 int main(int argc, char *argv[]) {
 
-	ConnectionHandler *handler = new ConnectionHandler(argv[1], (short) argv[2]);
+	if (argc < 3) {
+        std::cerr << "Usage: " << argv[0] << " host port" << std::endl << std::endl;
+        return -1;
+    }
+	std::string host = argv[1];
+    short port = atoi(argv[2]);
 
-    SocketListener socketListenerTask (handler);
+	ConnectionHandler *handler = new ConnectionHandler(host, port);
+
+	if (!handler->connect()) {
+        std::cerr << "Cannot connect to " << host << ":" << port << std::endl;
+        return 1;
+    }
+
+    SocketListener socketListenerTask(handler);
     InputManager inputManagerTask(handler);
 
 	std::thread socketListenerThread(&SocketListener::run, &socketListenerTask);
