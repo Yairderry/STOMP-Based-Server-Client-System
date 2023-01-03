@@ -50,6 +50,13 @@ public class User {
         return subscriptions;
     }
 
+    public String getSubscriptionId(String channel){
+        for (String id : subscriptions.keySet())
+            if (subscriptions.get(id).equals(channel))
+                return id;
+        return null;
+    }
+
     public void clearSubscriptions(){
         subscriptions.clear();
     }

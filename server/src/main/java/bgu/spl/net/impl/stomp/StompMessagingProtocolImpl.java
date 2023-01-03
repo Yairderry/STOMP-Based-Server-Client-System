@@ -1,17 +1,9 @@
 package bgu.spl.net.impl.stomp;
 
 import bgu.spl.net.api.StompMessagingProtocol;
-import bgu.spl.net.impl.stomp.database.Database;
 import bgu.spl.net.impl.stomp.database.User;
-import bgu.spl.net.impl.stomp.frames.ConnectedFrame;
-import bgu.spl.net.impl.stomp.frames.ErrorFrame;
-import bgu.spl.net.impl.stomp.frames.Frame;
-import bgu.spl.net.impl.stomp.frames.ReceiptFrame;
+import bgu.spl.net.impl.stomp.frames.*;
 import bgu.spl.net.srv.Connections;
-
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.List;
 
 public class StompMessagingProtocolImpl implements StompMessagingProtocol<String> {
 
@@ -19,6 +11,7 @@ public class StompMessagingProtocolImpl implements StompMessagingProtocol<String
     private int connectionId;
     private User connectedUser;
     private Connections<String> connections;
+    private int nextMessageId = 0;
 
     @Override
     public void start(int connectionId, Connections<String> connections) {
@@ -89,7 +82,7 @@ public class StompMessagingProtocolImpl implements StompMessagingProtocol<String
     }
 
     private void disconnect(Frame frame) {
-        if (!acknowledge(frame))
+        if (acknowledge(frame))
             return;
 
         // remove user from channels and clear its subscriptions
@@ -103,7 +96,7 @@ public class StompMessagingProtocolImpl implements StompMessagingProtocol<String
     }
 
     private void subscribe(Frame frame) {
-        if (!acknowledge(frame))
+        if (acknowledge(frame))
             return;
         String message = connections.getDB().trySubscribe(frame.getHeader("subscription-id"), frame.getHeader("destination"), connectedUser);
         if (!message.equals(""))
@@ -111,7 +104,7 @@ public class StompMessagingProtocolImpl implements StompMessagingProtocol<String
     }
 
     private void unsubscribe(Frame frame) {
-        if (!acknowledge(frame))
+        if (acknowledge(frame))
             return;
         String message = connections.getDB().tryUnsubscribe(frame.getHeader("id"), connectedUser);
         if (!message.equals(""))
@@ -119,11 +112,21 @@ public class StompMessagingProtocolImpl implements StompMessagingProtocol<String
     }
 
     private void send(Frame frame) {
-        if (!acknowledge(frame))
+        if (acknowledge(frame))
             return;
 
-            String channel = frame.getHeaders().get("destination");
+        String channel = frame.getHeader("destination");
+        String subscriptionId = connectedUser.getSubscriptionId(channel);
 
+        // Validate subscription
+        if (subscriptionId == null) {
+            error(frame, "User is not subscribed to this channel");
+            return;
+        }
+
+        // Generate and send message frame to the channel
+        Frame messageFrame = new MessageFrame(subscriptionId, "" + nextMessageId++, channel, frame.getBody());
+        connections.send(frame.getHeader("destination"), messageFrame.toString());
     }
 
     private void error(Frame frame, String message) {
@@ -145,12 +148,12 @@ public class StompMessagingProtocolImpl implements StompMessagingProtocol<String
     private boolean acknowledge(Frame frame){
         if (connectedUser == null) {
             error(frame, "User is not connected");
-            return false;
+            return true;
         }
         else {
             // send receipt if needed
             receipt(frame);
-            return true;
+            return false;
         }
     }
 

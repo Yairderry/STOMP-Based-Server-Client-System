@@ -61,6 +61,10 @@ public class Frame implements Serializable {
         return headers.getOrDefault(header, null);
     }
 
+    public String getBody(){
+        return body;
+    }
+
     public static String errorBody(Frame frame, String bodyMessage) {
         return "The message:" + "\n-----\n" + frame.toString().replace("\n\u0000", "") + "\n-----\n" + bodyMessage;
     }
