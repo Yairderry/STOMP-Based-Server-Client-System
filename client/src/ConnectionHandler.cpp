@@ -9,10 +9,18 @@ using std::endl;
 using std::string;
 
 ConnectionHandler::ConnectionHandler(string host, short port) : host_(host), port_(port), io_service_(),
-                                                                socket_(io_service_) {}
+                                                                socket_(io_service_), user(nullptr) {}
 
 ConnectionHandler::~ConnectionHandler() {
 	close();
+}
+
+void ConnectionHandler::setUser(User *user){
+	this->user = user;
+}
+
+User &ConnectionHandler::getUser(){
+	return *user;
 }
 
 bool ConnectionHandler::connect() {
