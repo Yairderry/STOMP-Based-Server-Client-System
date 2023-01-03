@@ -14,10 +14,6 @@ public class Database {
         return channels.getOrDefault(channel, null);
     }
 
-    public void addChannel(String channel) {
-        channels.putIfAbsent(channel, new HashSet<User>());
-    }
-
     public String trySubscribe(String subscriptionId, String channel, User user){
         channels.putIfAbsent(channel, new HashSet<User>());
         Set<User> channelUsers = channels.get(channel);

@@ -40,14 +40,14 @@ public class Frame implements Serializable {
         this.body = String.join("\n", Arrays.copyOfRange(lines, startOfBody, lines.length - 1));
     }
 
-//    @Override
-//    public String toString() {
-//        StringBuilder frame = new StringBuilder(command + "\n");
-//        for (String key : headers.keySet())
-//            frame.append(key).append(":").append(headers.get(key)).append("\n");
-//        frame.append("\n").append(body).append(endOfLine);
-//        return frame.toString();
-//    }
+    @Override
+    public String toString() {
+        StringBuilder frame = new StringBuilder(command + "\n");
+        for (String key : headers.keySet())
+            frame.append(key).append(":").append(headers.get(key)).append("\n");
+        frame.append("\n").append(body).append(endOfLine);
+        return frame.toString();
+    }
 
     public String getCommand() {
         return command;

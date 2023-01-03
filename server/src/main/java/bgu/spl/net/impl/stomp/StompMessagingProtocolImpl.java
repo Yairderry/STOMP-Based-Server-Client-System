@@ -52,7 +52,7 @@ public class StompMessagingProtocolImpl implements StompMessagingProtocol<String
                     if (errorMessage != null)
                         error(frame, errorMessage);
                     else
-                    unsubscribe(frame);
+                        unsubscribe(frame);
                         break;
                 case "SEND":
                     errorMessage = Frame.isSendFrame(frame);
