@@ -19,7 +19,7 @@ class User
 
         string getUsername();
         string getPassword();
-        int getNextSID();
-        int getNextRID();
+        int getSID();
+        int getRID();
         
 };

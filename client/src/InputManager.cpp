@@ -18,8 +18,8 @@ void InputManager::run(){
         // Create frame and act accordingly
         if (command == "login")
             login(args[1], args[2], args[3]);
-        // else if (command == "join")
-        //     join(args[1]);
+        else if (command == "join")
+            join(args[1]);
         // else if (command == "exit")
         //     exit(args[1]);
         // else if (command == "report")
@@ -42,8 +42,8 @@ void InputManager::login(string &host_port, string &username, string &password){
 
 void InputManager::join(string &game_name){
     User &user = handler->getUser();
-    string subscriptionId = ""+user.getNextSID();
-    string receiptId = ""+user.getNextRID();
+    string subscriptionId = ""+user.getSID();
+    string receiptId = ""+user.getRID();
     SubscribeFrame frame(game_name, subscriptionId, receiptId);
     string line = frame.toString();
     handler->sendLine(line);

@@ -24,6 +24,7 @@ public class StompMessagingProtocolImpl implements StompMessagingProtocol<String
     public void process(String message) {
         try {
             Frame frame = new Frame(message);
+            System.out.println(frame);
             String errorMessage = "Invalid command";
             switch (frame.getCommand()) {
                 case "CONNECT":
@@ -96,11 +97,13 @@ public class StompMessagingProtocolImpl implements StompMessagingProtocol<String
     }
 
     private void subscribe(Frame frame) {
+        System.out.println(frame);
         if (acknowledge(frame))
             return;
         String message = connections.getDB().trySubscribe(frame.getHeader("subscription-id"), frame.getHeader("destination"), connectedUser);
         if (!message.equals(""))
             error(frame, message);
+        System.out.println(message.length());
     }
 
     private void unsubscribe(Frame frame) {
