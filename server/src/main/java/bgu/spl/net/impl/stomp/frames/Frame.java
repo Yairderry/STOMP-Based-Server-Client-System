@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.HashMap;
 
-public class Frame implements Serializable {
+public class Frame {
 
     private final String command;
     protected final HashMap<String, String> headers;
@@ -27,7 +27,6 @@ public class Frame implements Serializable {
         String[] lines = frame.split("\n");
         this.command = lines[0];
         this.headers = new HashMap<>();
-        System.out.println(Arrays.toString(lines));
 
         int startOfBody = 2;
         boolean bodyEmpty = true;

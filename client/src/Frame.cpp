@@ -89,7 +89,7 @@ DisconnectFrame::DisconnectFrame(string &receiptId) : Frame("DISCONNECT", map<st
 
 SubscribeFrame::SubscribeFrame(string &destination, string &subscribeId, string &receiptId) : Frame("SUBSCRIBE", map<string, string>{}, ""){
     headers["destination"] = destination;
-    headers["subscribe-id"] = subscribeId;
+    headers["id"] = subscribeId;
     headers["receipt-id"] = receiptId;
 }
 
