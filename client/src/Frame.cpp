@@ -75,6 +75,28 @@ vector<string> Frame::split(const string &stringToSplit, char splitChar) {
 
 ConnectFrame::ConnectFrame(string &acceptVersion, string &host, string &login, string &passcode) : Frame("CONNECT", map<string, string>{}, ""){
     headers["accept-version"] = acceptVersion;
-
-
+    headers["host"] = host;
+    headers["login"] = login;
+    headers["login"] = passcode;
 }
+
+DisconnectFrame::DisconnectFrame(string &receiptId) : Frame("DISCONNECT", map<string, string>{}, ""){
+    headers["receipt-id"] = receiptId;
+}
+
+SubscribeFrame::SubscribeFrame(string &destination, string &subscribeId, string &receiptId) : Frame("SUBSCRIBE", map<string, string>{}, ""){
+    headers["destination"] = destination;
+    headers["subscribe-id"] = subscribeId;
+    headers["receipt-id"] = receiptId;
+}
+
+UnsubscribeFrame::UnsubscribeFrame(string &subscribeId, string &receiptId) : Frame("UNSUBSCRIBE", map<string, string>{}, ""){
+    headers["subscribe-id"] = subscribeId;
+    headers["receipt-id"] = receiptId;
+}
+
+SendFrame::SendFrame(string &destination, string &receiptId, string &body) : Frame("SEND", map<string, string>{}, body){
+    headers["destination"] = destination;
+    headers["receipt-id"] = receiptId;
+}
+
