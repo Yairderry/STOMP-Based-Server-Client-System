@@ -27,17 +27,20 @@ public class Frame implements Serializable {
         String[] lines = frame.split("\n");
         this.command = lines[0];
         this.headers = new HashMap<>();
+        System.out.println(Arrays.toString(lines));
 
         int startOfBody = 2;
+        boolean bodyEmpty = true;
         for (int i = 1; i < lines.length; i++) {
             if (lines[i].equals("")) {
+                bodyEmpty = false;
                 startOfBody = i + 1;
                 break;
             }
             String[] header = lines[i].split(":");
             this.headers.put(header[0], header[1]);
         }
-        this.body = String.join("\n", Arrays.copyOfRange(lines, startOfBody, lines.length));
+        this.body = bodyEmpty ? "" : String.join("\n", Arrays.copyOfRange(lines, startOfBody, lines.length));
     }
 
     @Override

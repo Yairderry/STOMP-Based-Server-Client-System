@@ -37,14 +37,13 @@ void InputManager::login(string &host_port, string &username, string &password){
     string version = "1.2";
     ConnectFrame frame(version, host_port, username, password);
     string line = frame.toString();
-    std::cout << "Sending:\n" << line << std::endl;
     handler->sendLine(line);
 }
 
 void InputManager::join(string &game_name){
     User &user = handler->getUser();
-    string subscriptionId = ""+user.getSID();
-    string receiptId = ""+user.getRID();
+    string subscriptionId = std::to_string(user.getSID());
+    string receiptId = std::to_string(user.getRID());
     SubscribeFrame frame(game_name, subscriptionId, receiptId);
     string line = frame.toString();
     handler->sendLine(line);
