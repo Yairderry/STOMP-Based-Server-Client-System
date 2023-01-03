@@ -37,6 +37,7 @@ void InputManager::login(string &host_port, string &username, string &password){
     string version = "1.2";
     ConnectFrame frame(version, host_port, username, password);
     string line = frame.toString();
+    std::cout << "Sending:\n" << line << std::endl;
     handler->sendLine(line);
 }
 

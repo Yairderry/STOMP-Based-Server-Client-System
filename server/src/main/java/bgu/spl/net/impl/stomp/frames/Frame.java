@@ -30,14 +30,14 @@ public class Frame implements Serializable {
 
         int startOfBody = 2;
         for (int i = 1; i < lines.length; i++) {
-            if (lines[i].length() == 0) {
+            if (lines[i].equals("")) {
                 startOfBody = i + 1;
                 break;
             }
             String[] header = lines[i].split(":");
             this.headers.put(header[0], header[1]);
         }
-        this.body = String.join("\n", Arrays.copyOfRange(lines, startOfBody, lines.length - 1));
+        this.body = String.join("\n", Arrays.copyOfRange(lines, startOfBody, lines.length));
     }
 
     @Override
@@ -45,7 +45,9 @@ public class Frame implements Serializable {
         StringBuilder frame = new StringBuilder(command + "\n");
         for (String key : headers.keySet())
             frame.append(key).append(":").append(headers.get(key)).append("\n");
-        frame.append("\n").append(body).append(endOfLine);
+        if (body.length() > 0)
+            frame.append("\n").append(body);
+        frame.append(endOfLine);
         return frame.toString();
     }
 

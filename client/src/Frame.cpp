@@ -26,9 +26,8 @@ Frame::Frame(const string &frame) {
     body = "";
     for (unsigned int i = startOfBody; i < lines.size(); i++) {
         body += lines[i];
-        if (i != lines.size() - 1) {
+        if (i != lines.size() - 1)
             body += '\n';
-        }
     }
 }
 
@@ -40,7 +39,7 @@ string Frame::toString() const {
         frame += header.first + ":" + header.second + '\n';
     
     if (body != "")
-        frame += body + '\n';
+        frame += '\n' + body;
     frame += endOfLine;
 
     return frame;
