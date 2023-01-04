@@ -23,10 +23,7 @@ public class StompMessagingProtocolImpl implements StompMessagingProtocol<String
     @Override
     public void process(String message) {
         try {
-            Frame frame = new Frame(message);
-            System.out.println("````````````````````");
-            System.out.println(frame);
-            System.out.println("````````````````````");
+            Frame frame = new Frame(message.trim());
             String errorMessage = "Invalid command";
             switch (frame.getCommand()) {
                 case "CONNECT":
@@ -144,8 +141,9 @@ public class StompMessagingProtocolImpl implements StompMessagingProtocol<String
 
     private void receipt(Frame frame) {
         String receiptId = frame.getHeader("receipt-id");
-        if (receiptId != null)
+        if (receiptId != null){
             connections.send(connectionId, new ReceiptFrame(receiptId).toString());
+        }
     }
 
     private boolean acknowledge(Frame frame){

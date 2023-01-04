@@ -12,7 +12,7 @@ Frame::Frame(const string &frame) {
     command = lines[0];
     headers = map<string, string>{};
 
-    unsigned int startOfBody = 2;
+    unsigned int startOfBody = -1;
 
     for (unsigned int i = 1; i < lines.size(); i++) {
         if (lines[i].empty()) {
@@ -22,11 +22,13 @@ Frame::Frame(const string &frame) {
         vector<string> header = split(lines[i], ':');
         headers[header[0]] = header[1];
     }
-
-    for (unsigned int i = startOfBody; i < lines.size(); i++) {
-        body += lines[i];
-        if (i != lines.size() - 1)
-            body += '\n';
+    body = "";
+    if (startOfBody != -1){
+        for (unsigned int i = startOfBody; i < lines.size(); i++) {
+            body += lines[i];
+            if (i != lines.size() - 1)
+                body += '\n';
+        }
     }
     
 }

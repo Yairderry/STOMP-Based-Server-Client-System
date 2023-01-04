@@ -41,7 +41,7 @@ void InputManager::login(string &host_port, string &username, string &password){
 void InputManager::join(string &game_name){
     User &user = handler->getUser();
     if (!user.getConnected()) return;
-
+    
     string subscriptionId = std::to_string(user.getNextSID());
     string receiptId = "subscribe-" + std::to_string(user.getNextRID());
     SubscribeFrame frame(game_name, subscriptionId, receiptId);

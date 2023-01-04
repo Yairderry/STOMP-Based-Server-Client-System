@@ -28,7 +28,8 @@ public class Frame {
         this.command = lines[0];
         this.headers = new HashMap<>();
 
-        int startOfBody = 2;
+        int startOfBody = -1;
+
         for (int i = 1; i < lines.length; i++) {
             if (lines[i].equals("")) {
                 startOfBody = i + 1;
@@ -37,7 +38,7 @@ public class Frame {
             String[] header = lines[i].split(":");
             this.headers.put(header[0], header[1]);
         }
-        this.body = String.join("\n", Arrays.copyOfRange(lines, startOfBody, lines.length-1));
+        this.body = startOfBody == -1 ? "" : String.join("\n", Arrays.copyOfRange(lines, startOfBody, lines.length));
     }
 
     @Override

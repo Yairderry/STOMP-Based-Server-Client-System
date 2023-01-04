@@ -11,8 +11,9 @@ void StompProtocol::proccess(Frame &frame){
         connected(frame);
     else if (command == "ERROR")
         error(frame);
-    else if (command == "RECEIPT")
+    else if (command == "RECEIPT"){
         receipt(frame);
+    }
     else if (command == "MESSAGE")
         message(frame);
 }
@@ -20,19 +21,20 @@ void StompProtocol::proccess(Frame &frame){
 void StompProtocol::connected(Frame &frame){
     User &user = handler->getUser();
     user.toggleConnected();
-    // cout << "Login Successful" << endl;
+    std::cout << "Login Successful" << std::endl;
 }
 
 void StompProtocol::error(Frame &frame){
+    std::cout << "error" << std::endl;
     
 }
 
 void StompProtocol::receipt(Frame &frame){
-    
+    std::cout << "receipt" << std::endl;
 }
 
 void StompProtocol::message(Frame &frame){
-    
+    std::cout << "message" << std::endl;
 }
 
 void StompProtocol::setHandler(ConnectionHandler *handler){
