@@ -98,7 +98,7 @@ public class StompMessagingProtocolImpl implements StompMessagingProtocol<String
     private void subscribe(Frame frame) {
         if (acknowledge(frame))
             return;
-        String message = connections.getDB().trySubscribe(frame.getHeader("subscription-id"), frame.getHeader("destination"), connectedUser);
+        String message = connections.getDB().trySubscribe(frame.getHeader("id"), frame.getHeader("destination"), connectedUser);
         if (!message.equals(""))
             error(frame, message);
     }
