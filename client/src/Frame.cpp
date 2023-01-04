@@ -1,6 +1,7 @@
 #include <utility>
 
 #include "../include/Frame.h"
+#include "../include/ConnectionHandler.h"
 
 Frame::Frame(string command, map<string, string> headers, string body) : command(std::move(command)),
                                                                          headers(std::move(headers)),

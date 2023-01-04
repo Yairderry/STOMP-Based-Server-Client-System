@@ -17,6 +17,7 @@ class User
         int nextReceiptId;
         map<string, int> subscriptions;
         map<string, vector<Event>> games;
+        bool connected = false;
 
     public:
         User(string&, string&);
@@ -27,6 +28,7 @@ class User
         int getNextRID();
         int getSubscriptionId(string&);
         void addSubscription(string&, int);
-        // void addGame(string&, vector<Event>);
+        void toggleConnected();
+        bool getConnected();
         
 };

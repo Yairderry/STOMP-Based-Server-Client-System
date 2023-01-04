@@ -1,4 +1,7 @@
 #include "../include/ConnectionHandler.h"
+#include "../include/Frame.h"
+#include "../include/StompProtocol.h"
+#include "../include/User.h"
 
 using boost::asio::ip::tcp;
 
@@ -9,7 +12,7 @@ using std::endl;
 using std::string;
 
 ConnectionHandler::ConnectionHandler(string host, short port) : host_(host), port_(port), io_service_(),
-                                                                socket_(io_service_), user(nullptr) {}
+                                                                socket_(io_service_), user(nullptr), protocol(nullptr){}
 
 ConnectionHandler::~ConnectionHandler() {
 	close();
@@ -21,6 +24,14 @@ void ConnectionHandler::setUser(User *user){
 
 User &ConnectionHandler::getUser(){
 	return *user;
+}
+
+void ConnectionHandler::setProtocol(StompProtocol *protocol){
+	this->protocol = protocol;
+}
+
+StompProtocol &ConnectionHandler::getProtocol(){
+	return *protocol;
 }
 
 bool ConnectionHandler::connect() {
@@ -113,4 +124,8 @@ void ConnectionHandler::close() {
 	} catch (...) {
 		std::cout << "closing failed: connection already closed" << std::endl;
 	}
+}
+
+void ConnectionHandler::protocolProccess(Frame &frame){
+	protocol->proccess(frame);
 }

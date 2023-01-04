@@ -3,9 +3,12 @@
 #include <string>
 #include <iostream>
 #include <boost/asio.hpp>
-#include "../include/User.h"
 
 using boost::asio::ip::tcp;
+
+class Frame;
+class StompProtocol;
+class User;
 
 class ConnectionHandler {
 private:
@@ -14,6 +17,7 @@ private:
 	boost::asio::io_service io_service_;   // Provides core I/O functionality
 	tcp::socket socket_;
 	User *user;
+	StompProtocol *protocol;
 
 public:
 	ConnectionHandler(std::string host, short port);
@@ -22,6 +26,9 @@ public:
 
 	void setUser(User *);
 	User &getUser();
+
+	void setProtocol(StompProtocol *);
+	StompProtocol &getProtocol();
 
 	// Connect to the remote machine
 	bool connect();
@@ -52,5 +59,8 @@ public:
 
 	// Close down the connection properly.
 	void close();
+
+	// Process by STOMP protocol
+	void protocolProccess(Frame &frame);
 
 }; //class ConnectionHandler

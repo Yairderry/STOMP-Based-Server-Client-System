@@ -13,6 +13,10 @@ void User::addSubscription(string& id, int){
     subscriptions[id] = nextSubscriptionId++;
 }
 
-// void User::addGame(string& game_name, vector<Event> events){
-//     games[game_name] = events;
-// }
+void User::toggleConnected(){
+    connected = !connected;
+}
+
+bool User::getConnected(){
+    return connected;
+}

@@ -1,9 +1,7 @@
 #include "../include/InputManager.h"
+#include "../include/ConnectionHandler.h"
 #include "../include/Frame.h"
-#include "../include/Event.h"
-#include <string>
-
-using std::string;
+#include "../include/User.h"
 
 InputManager::InputManager(ConnectionHandler *handler) : handler(handler) {}
 
@@ -42,6 +40,8 @@ void InputManager::login(string &host_port, string &username, string &password){
 
 void InputManager::join(string &game_name){
     User &user = handler->getUser();
+    if (!user.getConnected()) return;
+
     string subscriptionId = std::to_string(user.getNextSID());
     string receiptId = "subscribe-" + std::to_string(user.getNextRID());
     SubscribeFrame frame(game_name, subscriptionId, receiptId);
@@ -51,6 +51,8 @@ void InputManager::join(string &game_name){
 
 void InputManager::exit(string &game_name){
     User &user = handler->getUser();
+    if (!user.getConnected()) return;
+
     string subscriptionId = std::to_string(user.getSubscriptionId(game_name));
     string receiptId = "unsubscribe-" + std::to_string(user.getNextRID());
     UnsubscribeFrame frame(subscriptionId, receiptId);
@@ -60,11 +62,12 @@ void InputManager::exit(string &game_name){
 
 void InputManager::report(string &file_path){
     User &user = handler->getUser();
+    if (!user.getConnected()) return;
+
     names_and_events game = parseEventsFile(file_path);
     string destination = game.team_a_name + "_" + game.team_b_name;
     vector<Event> events = game.events;
     std::sort(events.begin(), events.end(), [](const Event & a, const Event & b) -> bool{ return a.get_time() < b.get_time(); });
-    // user.addGame(destination, events);
 
     for (Event event : events){
         string body = "user: " + user.getUsername() + "\n" + event.toString();
@@ -76,15 +79,19 @@ void InputManager::report(string &file_path){
 }
 
 void InputManager::summary(string &game_name, string &user, string &file_path){
-    User &user = handler->getUser();
+    // User &user = handler->getUser();
 }
 
 void InputManager::logout(){
     User &user = handler->getUser();
+    if (!user.getConnected()) return;
+
     string receiptId = "disconnect-" + std::to_string(user.getNextRID());
     DisconnectFrame frame(receiptId);
     string line = frame.toString();
     handler->sendLine(line);
+    
+    user.toggleConnected();
     shouldTerminate = true;
 }
 

@@ -2,7 +2,7 @@
 
 #include <string>
 #include <map>
-#include "ConnectionHandler.h"
+#include <vector>
 
 using std::string;
 using std::map;

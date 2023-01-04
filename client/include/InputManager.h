@@ -1,9 +1,10 @@
 #pragma once
 
-#include "../include/ConnectionHandler.h"
 #include <string>
 
 using std::string;
+
+class ConnectionHandler;
 
 class InputManager
 {
