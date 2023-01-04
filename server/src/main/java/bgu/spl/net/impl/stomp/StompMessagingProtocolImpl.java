@@ -24,6 +24,7 @@ public class StompMessagingProtocolImpl implements StompMessagingProtocol<String
     public void process(String message) {
         try {
             Frame frame = new Frame(message.trim());
+            System.out.println(frame);
             String errorMessage = "Invalid command";
             switch (frame.getCommand()) {
                 case "CONNECT":
@@ -114,7 +115,7 @@ public class StompMessagingProtocolImpl implements StompMessagingProtocol<String
     private void send(Frame frame) {
         if (acknowledge(frame))
             return;
-
+        System.out.println(frame);
         String channel = frame.getHeader("destination");
         String subscriptionId = connectedUser.getSubscriptionId(channel);
 

@@ -62,17 +62,16 @@ void InputManager::exit(string &game_name){
 void InputManager::report(string &file_path){
     User &user = handler->getUser();
     names_and_events game = parseEventsFile(file_path);
-    string destination; game.team_a_name + "_" + game.team_b_name;
+    string destination = game.team_a_name + "_" + game.team_b_name;
     vector<Event> events = game.events;
-    std::sort(events.begin(), events.end(), [](const Event & a, const Event & b) -> bool{ return a.get_time() > b.get_time(); });
+    std::sort(events.begin(), events.end(), [](const Event & a, const Event & b) -> bool{ return a.get_time() < b.get_time(); });
     // user.addGame(destination, events);
-    
+
     for (Event event : events){
-        string body = "user: " + user.getUsername() + "/n" + event.toString();
+        string body = "user: " + user.getUsername() + "\n" + event.toString();
         string receiptId = std::to_string(user.getNextRID());
         SendFrame frame(destination, receiptId, body);
         string line = frame.toString();
-        std::cout << line << std::endl;
         handler->sendLine(line);
     }
 }

@@ -66,7 +66,8 @@ Event::Event(const std::string &frame_body) : team_a_name(""), team_b_name(""), 
 }
 
 std::string &Event::toString(){
-    std::string output = "";
+    std::string &output = *new std::string();
+
     output += "team a: " + this->team_a_name + "\n";
     output += "team b: " + this->team_b_name + "\n";
     output += "event name: " + this->name + "\n";
@@ -84,7 +85,7 @@ std::string &Event::toString(){
     for (auto &update : this->team_b_updates)
         output += "\t" + update.first + ": " + update.second + "\n";
 
-    output += "description: " + this->description;
+    output += "description:\n" + this->description;
 
     return output;
 }
@@ -93,7 +94,7 @@ names_and_events parseEventsFile(std::string json_path)
 {
     std::ifstream f(json_path);
     json data = json::parse(f);
-
+    
     std::string team_a_name = data["team a"];
     std::string team_b_name = data["team b"];
 
