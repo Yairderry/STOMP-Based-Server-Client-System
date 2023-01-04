@@ -3,14 +3,14 @@ LDFLAGS:=-lboost_system -lpthread
 
 all: StompWCIClient
 
-StompWCIClient: bin/ConnectionHandler.o bin/StompClient.o bin/event.o bin/Frame.o bin/InputManager.o bin/SocketListener.o bin/User.o bin/StompProtocol.o
-	g++ -o bin/StompWCIClient bin/ConnectionHandler.o bin/StompClient.o bin/Frame.o bin/InputManager.o bin/SocketListener.o bin/User.o bin/StompProtocol.o $(LDFLAGS)
+StompWCIClient: bin/ConnectionHandler.o bin/StompClient.o bin/Event.o bin/Frame.o bin/InputManager.o bin/SocketListener.o bin/User.o bin/StompProtocol.o
+	g++ -o bin/StompWCIClient bin/ConnectionHandler.o bin/StompClient.o bin/Event.o bin/Frame.o bin/InputManager.o bin/SocketListener.o bin/User.o bin/StompProtocol.o $(LDFLAGS)
 
 bin/ConnectionHandler.o: src/ConnectionHandler.cpp
 	g++ $(CFLAGS) -o bin/ConnectionHandler.o src/ConnectionHandler.cpp
 
-bin/event.o: src/event.cpp
-	g++ $(CFLAGS) -o bin/event.o src/event.cpp
+bin/Event.o: src/Event.cpp
+	g++ $(CFLAGS) -o bin/Event.o src/Event.cpp
 
 bin/StompClient.o: src/StompClient.cpp
 	g++ $(CFLAGS) -o bin/StompClient.o src/StompClient.cpp

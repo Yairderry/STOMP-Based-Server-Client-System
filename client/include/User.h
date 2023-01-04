@@ -1,9 +1,12 @@
 #pragma once
 #include <string>
 #include <map>
+#include <vector>
+#include "Event.h"
 
 using std::string;
 using std::map;
+using std::vector;
 
 class User
 {
@@ -12,14 +15,18 @@ class User
         string password;
         int nextSubscriptionId;
         int nextReceiptId;
-        map<int, string> subscriptions;
+        map<string, int> subscriptions;
+        map<string, vector<Event>> games;
 
     public:
         User(string&, string&);
 
         string getUsername();
         string getPassword();
-        int getSID();
-        int getRID();
+        int getNextSID();
+        int getNextRID();
+        int getSubscriptionId(string&);
+        void addSubscription(string&, int);
+        // void addGame(string&, vector<Event>);
         
 };
