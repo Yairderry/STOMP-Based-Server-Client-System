@@ -7,8 +7,11 @@ SocketListener::SocketListener(ConnectionHandler *handler) : handler(handler){}
 void SocketListener::run(){
     while (!shouldTerminate){
         string input;
-        handler->getLine(input);
+        handler->getFrameAscii(input, '\0');
         Frame frame(input);
+        std::cout << "//////////////////" << std::endl;
+        std::cout << frame.toString() << std::endl;
+        std::cout << "//////////////////" << std::endl;
         handler->protocolProccess(frame);
     }
 }
