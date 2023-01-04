@@ -24,32 +24,29 @@ public class Frame {
     }
 
     public Frame(String frame) {
-        String[] lines = frame.split("\n");
+        String[] lines = frame.split("\\n", -1);
         this.command = lines[0];
         this.headers = new HashMap<>();
 
         int startOfBody = 2;
-        boolean bodyEmpty = true;
         for (int i = 1; i < lines.length; i++) {
             if (lines[i].equals("")) {
-                bodyEmpty = false;
                 startOfBody = i + 1;
                 break;
             }
             String[] header = lines[i].split(":");
             this.headers.put(header[0], header[1]);
         }
-        this.body = bodyEmpty ? "" : String.join("\n", Arrays.copyOfRange(lines, startOfBody, lines.length));
+        this.body = String.join("\n", Arrays.copyOfRange(lines, startOfBody, lines.length-1));
     }
 
     @Override
     public String toString() {
-        StringBuilder frame = new StringBuilder(command + "\n");
+        StringBuilder frame = new StringBuilder(command).append("\n");
         for (String key : headers.keySet())
             frame.append(key).append(":").append(headers.get(key)).append("\n");
-        if (body.length() > 0)
-            frame.append("\n").append(body);
-        frame.append(endOfLine);
+        frame.append("\n"); // gap
+        frame.append(body.equals("") ? "" : body + "\n").append(endOfLine);
         return frame.toString();
     }
 

@@ -1,6 +1,7 @@
 #include "../include/StompProtocol.h"
 #include "../include/Frame.h"
 #include "../include/ConnectionHandler.h"
+#include "../include/User.h"
 
 StompProtocol::StompProtocol(){}
 
@@ -17,7 +18,9 @@ void StompProtocol::proccess(Frame &frame){
 }
 
 void StompProtocol::connected(Frame &frame){
-
+    User &user = handler->getUser();
+    user.toggleConnected();
+    // cout << "Login Successful" << endl;
 }
 
 void StompProtocol::error(Frame &frame){

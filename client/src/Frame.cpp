@@ -13,11 +13,9 @@ Frame::Frame(const string &frame) {
     headers = map<string, string>{};
 
     unsigned int startOfBody = 2;
-    bool bodyEmpty = true;
 
     for (unsigned int i = 1; i < lines.size(); i++) {
         if (lines[i].empty()) {
-            bodyEmpty = false;
             startOfBody = i + 1;
             break;
         }
@@ -25,14 +23,12 @@ Frame::Frame(const string &frame) {
         headers[header[0]] = header[1];
     }
 
-    body = "";
-    if (!bodyEmpty){
-        for (unsigned int i = startOfBody; i < lines.size(); i++) {
-            body += lines[i];
-            if (i != lines.size() - 1)
-                body += '\n';
-        }
+    for (unsigned int i = startOfBody; i < lines.size(); i++) {
+        body += lines[i];
+        if (i != lines.size() - 1)
+            body += '\n';
     }
+    
 }
 
 
@@ -41,9 +37,8 @@ string Frame::toString() const {
 
     for (auto &header : headers)
         frame += header.first + ":" + header.second + '\n';
-    
-    if (body != "")
-        frame += '\n' + body;
+    frame += '\n'; // gap
+    frame += body == "" ? "" : body + '\n';
     frame += endOfLine;
 
     return frame;

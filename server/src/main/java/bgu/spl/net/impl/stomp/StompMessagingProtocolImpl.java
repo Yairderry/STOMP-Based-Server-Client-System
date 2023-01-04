@@ -23,8 +23,10 @@ public class StompMessagingProtocolImpl implements StompMessagingProtocol<String
     @Override
     public void process(String message) {
         try {
-            Frame frame = new Frame(message.trim());
+            Frame frame = new Frame(message);
+            System.out.println("````````````````````");
             System.out.println(frame);
+            System.out.println("````````````````````");
             String errorMessage = "Invalid command";
             switch (frame.getCommand()) {
                 case "CONNECT":
