@@ -25,7 +25,7 @@ void StompProtocol::connected(Frame &frame){
 }
 
 void StompProtocol::error(Frame &frame){
-    std::cout << "error" << std::endl;
+    std::cout << frame.toString() << std::endl;
     
 }
 

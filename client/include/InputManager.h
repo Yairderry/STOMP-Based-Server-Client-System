@@ -10,7 +10,6 @@ class InputManager
 {
 private:
     ConnectionHandler *handler;
-    bool shouldTerminate = false;
 
 public:
     InputManager(ConnectionHandler*);

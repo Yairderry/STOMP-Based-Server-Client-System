@@ -18,12 +18,24 @@ ConnectionHandler::~ConnectionHandler() {
 	close();
 }
 
+bool ConnectionHandler::getShouldTerminate(){
+	return shouldTerminate;
+}
+
+void ConnectionHandler::terminate(){
+	shouldTerminate = true;
+}
+
 void ConnectionHandler::setUser(User *user){
 	this->user = user;
 }
 
 User &ConnectionHandler::getUser(){
 	return *user;
+}
+
+bool ConnectionHandler::isLoggedIn(){
+	return user != nullptr;
 }
 
 void ConnectionHandler::setProtocol(StompProtocol *protocol){

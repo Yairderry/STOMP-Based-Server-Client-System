@@ -7,7 +7,7 @@
 SocketListener::SocketListener(ConnectionHandler *handler) : handler(handler){}
 
 void SocketListener::run(){
-    while (!shouldTerminate){
+    while (!handler->getShouldTerminate()){
         string input;
         handler->getFrameAscii(input, '\0');
         boost::trim(input);

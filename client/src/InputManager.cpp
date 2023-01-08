@@ -6,7 +6,7 @@
 InputManager::InputManager(ConnectionHandler *handler) : handler(handler) {}
 
 void InputManager::run(){
-    while (!shouldTerminate){
+    while (!handler->getShouldTerminate()){
 
         // Get next command and parse it
         string input;
@@ -31,6 +31,10 @@ void InputManager::run(){
 }
 
 void InputManager::login(string &host_port, string &username, string &password){
+    if (handler->isLoggedIn()){
+        std::cout << "The client is already logged in, log out before trying again" << std::endl;
+        return;
+    }
     handler->setUser(new User(username, password));
     string version = "1.2";
     ConnectFrame frame(version, host_port, username, password);
@@ -92,6 +96,6 @@ void InputManager::logout(){
     handler->sendLine(line);
     
     user.toggleConnected();
-    shouldTerminate = true;
+    handler->setUser(nullptr);
 }
 

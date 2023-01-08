@@ -18,14 +18,19 @@ private:
 	tcp::socket socket_;
 	User *user;
 	StompProtocol *protocol;
+	bool shouldTerminate = false;
 
 public:
 	ConnectionHandler(std::string host, short port);
 
 	virtual ~ConnectionHandler();
 
+	bool getShouldTerminate();
+	void terminate();
+
 	void setUser(User *);
 	User &getUser();
+	bool isLoggedIn();
 
 	void setProtocol(StompProtocol *);
 	StompProtocol &getProtocol();

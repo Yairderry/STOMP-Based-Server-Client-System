@@ -89,8 +89,6 @@ public class StompMessagingProtocolImpl implements StompMessagingProtocol<String
         connections.getDB().removeUserFromChannels(connectedUser);
 
         // disconnect socket
-        connections.disconnect(connectionId);
-        shouldTerminate = true;
         connectedUser.toggleConnected();
         connectedUser = null;
     }

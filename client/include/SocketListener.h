@@ -10,7 +10,6 @@ class SocketListener
 {
 private:
     ConnectionHandler *handler;
-    bool shouldTerminate = false;
 
 public:
     SocketListener(ConnectionHandler*);
