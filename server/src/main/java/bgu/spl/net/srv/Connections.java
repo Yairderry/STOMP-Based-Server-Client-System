@@ -14,6 +14,4 @@ public interface Connections<T> {
     void disconnect(int connectionId);
 
     void addConnection(ConnectionHandler<T> connectionHandler, StompMessagingProtocol<T> protocol);
-
-    Database getDB();
 }

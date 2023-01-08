@@ -15,7 +15,8 @@ class User
         string password;
         int nextSubscriptionId;
         int nextReceiptId;
-        map<string, int> subscriptions;
+        map<string, int> subsByName;
+        map<int, string> subsById;
         map<string, vector<Event>> games;
         bool connected = false;
 
@@ -27,7 +28,9 @@ class User
         int getNextSID();
         int getNextRID();
         int getSubscriptionId(string&);
+        string getChannelById(int);
         void addSubscription(string&, int);
+        void removeSubscription(string&);
         void toggleConnected();
         bool getConnected();
         

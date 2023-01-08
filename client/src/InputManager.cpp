@@ -48,6 +48,9 @@ void InputManager::join(string &game_name){
     
     string subscriptionId = std::to_string(user.getNextSID());
     string receiptId = "subscribe-" + std::to_string(user.getNextRID());
+
+    user.addSubscription(game_name, std::stoi(subscriptionId));
+
     SubscribeFrame frame(game_name, subscriptionId, receiptId);
     string line = frame.toString();
     handler->sendLine(line);
@@ -59,6 +62,9 @@ void InputManager::exit(string &game_name){
 
     string subscriptionId = std::to_string(user.getSubscriptionId(game_name));
     string receiptId = "unsubscribe-" + std::to_string(user.getNextRID());
+
+    user.removeSubscription(game_name);
+
     UnsubscribeFrame frame(subscriptionId, receiptId);
     string line = frame.toString();
     handler->sendLine(line);
@@ -69,6 +75,7 @@ void InputManager::report(string &file_path){
     if (!user.getConnected()) return;
 
     names_and_events game = parseEventsFile(file_path);
+    
     string destination = game.team_a_name + "_" + game.team_b_name;
     vector<Event> events = game.events;
     std::sort(events.begin(), events.end(), [](const Event & a, const Event & b) -> bool{ return a.get_time() < b.get_time(); });
@@ -94,8 +101,5 @@ void InputManager::logout(){
     DisconnectFrame frame(receiptId);
     string line = frame.toString();
     handler->sendLine(line);
-    
-    user.toggleConnected();
-    handler->setUser(nullptr);
 }
 

@@ -1,16 +1,25 @@
 #include "../include/User.h"
 
-User::User(string &username, string &password) : username(username), password(password), nextSubscriptionId(0), nextReceiptId(0), subscriptions(map<string, int>{}){}
+User::User(string &username, string &password) : username(username), password(password), nextSubscriptionId(0), nextReceiptId(0), subsByName(map<string, int>{}), subsById(map<int, string>{}){}
         
 string User::getUsername() {return username;}
 string User::getPassword() {return password;}
 int User::getNextSID() {return nextSubscriptionId;}
 int User::getNextRID() {return nextReceiptId;}
-int User::getSubscriptionId(string& id){
-    return subscriptions.find(id) == subscriptions.end() ? -1 : subscriptions[id];
+int User::getSubscriptionId(string& game_name){
+    return subsByName.find(game_name) == subsByName.end() ? -1 : subsByName[game_name];
 }
-void User::addSubscription(string& id, int){
-    subscriptions[id] = nextSubscriptionId++;
+string User::getChannelById(int id){
+    return subsById.find(id) == subsById.end() ? "" : subsById[id];
+}
+void User::addSubscription(string& game_name, int){
+    subsById[nextSubscriptionId] = game_name;
+    subsByName[game_name] = nextSubscriptionId++;
+}
+void User::removeSubscription(string& game_name){
+    int id = subsByName[game_name];
+    subsByName.erase(game_name);
+    subsById.erase(id);
 }
 
 void User::toggleConnected(){

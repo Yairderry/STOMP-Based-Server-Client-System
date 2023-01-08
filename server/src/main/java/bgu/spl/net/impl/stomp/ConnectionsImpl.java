@@ -1,19 +1,14 @@
 package bgu.spl.net.impl.stomp;
 
 import bgu.spl.net.api.StompMessagingProtocol;
-import bgu.spl.net.impl.stomp.database.Database;
-import bgu.spl.net.impl.stomp.database.User;
 import bgu.spl.net.srv.ConnectionHandler;
 import bgu.spl.net.srv.Connections;
 
 import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
 
 public final class ConnectionsImpl<T> implements Connections<T> {
 
     private final HashMap<Integer, ConnectionHandler<T>> connections = new HashMap<>();
-    private final Database db = new Database();
     int nextConnectionId = 0;
 
     @Override
@@ -27,10 +22,7 @@ public final class ConnectionsImpl<T> implements Connections<T> {
 
     @Override
     public void send(String channel, T msg) {
-        Set<User> channelUsers = db.getChannel(channel);
-        if (channelUsers != null)
-            for (User user : channelUsers)
-                connections.get(user.getConnectionId()).send(msg);
+        return;
     }
 
     @Override
@@ -41,10 +33,6 @@ public final class ConnectionsImpl<T> implements Connections<T> {
     public void addConnection(ConnectionHandler<T> connectionHandler, StompMessagingProtocol<T> protocol) {
         connections.put(nextConnectionId, connectionHandler);
         protocol.start(nextConnectionId++, this);
-    }
-
-    public Database getDB() {
-        return db;
     }
 
 }
