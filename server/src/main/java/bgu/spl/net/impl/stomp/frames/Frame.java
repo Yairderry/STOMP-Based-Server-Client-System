@@ -88,10 +88,8 @@ public class Frame {
     }
 
     public static String isDisconnectFrame(Frame frame) {
-        if (!frame.headers.containsKey("receipt"))
-            return "receipt header is missing";
-        if (!frame.headers.get("receipt").matches("[0-9]+"))
-            return "receipt header is not a number";
+        if (!frame.headers.containsKey("receipt-id"))
+            return "receipt-id header is missing";
         return null;
     }
 

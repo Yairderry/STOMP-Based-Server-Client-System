@@ -36,5 +36,6 @@ class User
         void toggleConnected();
         bool getConnected();
         void addEvent(Event &, string &, string &);
+        vector<Event> &getEvents(string &, string &);
         
 };

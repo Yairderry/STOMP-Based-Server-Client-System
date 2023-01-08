@@ -28,6 +28,8 @@ void InputManager::run(){
         else if (command == "logout")
             logout();
     } 
+        std::cout << "input manager terminated" << std::endl;
+
 }
 
 void InputManager::login(string &host_port, string &username, string &password){
@@ -48,12 +50,12 @@ void InputManager::join(string &game_name){
     
     string subscriptionId = std::to_string(user.getNextSID());
     string receiptId = "subscribe-" + std::to_string(user.getNextRID());
-
     user.addSubscription(game_name, std::stoi(subscriptionId));
 
     SubscribeFrame frame(game_name, subscriptionId, receiptId);
     string line = frame.toString();
     handler->sendLine(line);
+    std::cout << "FINISHED JOIN!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << std::endl;
 }
 
 void InputManager::exit(string &game_name){
@@ -89,8 +91,46 @@ void InputManager::report(string &file_path){
     }
 }
 
-void InputManager::summary(string &game_name, string &user, string &file_path){
-    // User &user = handler->getUser();
+void InputManager::summary(string &game_name, string &reporter_user, string &file_path){
+    User &user = handler->getUser();
+    vector<Event> &events = user.getEvents(game_name, reporter_user);
+
+    string output = "";
+    
+    vector<string> names = Frame::split(game_name, '_');
+    output += names[0] + " vs " + names[1] + '\n' + "Game stats:\n";
+
+    map<string, string> general_stats;
+    map<string, string> team_a_stats;
+    map<string, string> team_b_stats;
+    string game_events = "Game event reports:\n";
+
+    for (Event &event : events){
+        game_events +=  event.summarize();
+
+        for (auto pair : event.get_game_updates())
+            general_stats[pair.first] = pair.second;
+        for (auto pair : event.get_team_a_updates())
+            team_a_stats[pair.first] = pair.second;
+        for (auto pair : event.get_team_b_updates())
+            team_b_stats[pair.first] = pair.second;    
+    }
+
+    output += "General stats:\n";
+    for (auto pair : general_stats)
+        output += pair.first + ": " + pair.second + '\n';
+    output += names[0] + " stats:\n";
+    for (auto pair : team_a_stats)
+        output += pair.first + ": " + pair.second + '\n';
+    output += names[1] + " stats:\n";
+    for (auto pair : team_b_stats)
+        output += pair.first + ": " + pair.second + '\n';
+
+    output += game_events;
+
+    std::ofstream outputFile(file_path, std::ofstream::trunc);
+    outputFile << output << std::endl;
+    outputFile.close();
 }
 
 void InputManager::logout(){

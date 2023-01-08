@@ -124,6 +124,10 @@ std::string &Event::toString(){
     return output;
 }
 
+std::string Event::summarize(){
+    return std::to_string(time) + " - " + name + ":\n\n" + description + "\n\n";
+}
+
 names_and_events parseEventsFile(std::string json_path)
 {
     std::ifstream f(json_path);

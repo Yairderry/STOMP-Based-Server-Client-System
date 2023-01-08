@@ -12,7 +12,7 @@ int User::getSubscriptionId(string& game_name){
 string User::getChannelById(int id){
     return subsById.find(id) == subsById.end() ? "" : subsById[id];
 }
-void User::addSubscription(string& game_name, int){
+void User::addSubscription(string& game_name, int){ 
     subsById[nextSubscriptionId] = game_name;
     subsByName[game_name] = nextSubscriptionId++;
 }
@@ -32,4 +32,8 @@ bool User::getConnected(){
 
 void User::addEvent(Event &reported_event, string &game_name, string &reporter_user){
     forum.addEvent(reported_event, game_name, reporter_user);
+}
+
+vector<Event> &User::getEvents(string &game_name, string &user){
+    forum.getEvents(game_name, user);
 }
