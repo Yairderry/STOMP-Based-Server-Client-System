@@ -3,6 +3,7 @@
 #include <map>
 #include <vector>
 #include "Event.h"
+#include "Forum.h"
 
 using std::string;
 using std::map;
@@ -19,6 +20,7 @@ class User
         map<int, string> subsById;
         map<string, vector<Event>> games;
         bool connected = false;
+        Forum forum;
 
     public:
         User(string&, string&);
@@ -33,5 +35,6 @@ class User
         void removeSubscription(string&);
         void toggleConnected();
         bool getConnected();
+        void addEvent(Event &, string &, string &);
         
 };

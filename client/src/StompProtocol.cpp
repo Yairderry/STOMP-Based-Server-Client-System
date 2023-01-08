@@ -50,6 +50,13 @@ void StompProtocol::receipt(Frame &frame){
 void StompProtocol::message(Frame &frame){
     User &user = handler->getUser();
     string game_name = user.getChannelById(std::stoi(frame.getHeader("subscription")));
+    vector<string> body_lines = Frame::split(frame.getBody(), '\n');
+    string first_line = body_lines[0];
+    string reporter_user = first_line.substr(first_line.find(":"), first_line.size()-1); // possible bug
+
+    Event reported_event(frame.getBody());
+
+    user.addEvent(reported_event, game_name, reporter_user);
 }
 
 void StompProtocol::setHandler(ConnectionHandler *handler){

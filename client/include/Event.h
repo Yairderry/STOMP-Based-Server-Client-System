@@ -5,6 +5,8 @@
 #include <map>
 #include <vector>
 
+using std::string;
+
 class Event
 {
 private:

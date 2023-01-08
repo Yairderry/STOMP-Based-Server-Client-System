@@ -1,6 +1,6 @@
 #include "../include/User.h"
 
-User::User(string &username, string &password) : username(username), password(password), nextSubscriptionId(0), nextReceiptId(0), subsByName(map<string, int>{}), subsById(map<int, string>{}){}
+User::User(string &username, string &password) : username(username), password(password), nextSubscriptionId(0), nextReceiptId(0), subsByName(map<string, int>{}), subsById(map<int, string>{}), forum(Forum()){}
         
 string User::getUsername() {return username;}
 string User::getPassword() {return password;}
@@ -28,4 +28,8 @@ void User::toggleConnected(){
 
 bool User::getConnected(){
     return connected;
+}
+
+void User::addEvent(Event &reported_event, string &game_name, string &reporter_user){
+    forum.addEvent(reported_event, game_name, reporter_user);
 }
