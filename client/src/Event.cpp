@@ -69,12 +69,24 @@ Event::Event(const std::string &frame_body) : team_a_name(""), team_b_name(""), 
     team_b_name = Frame::split(report_lines[1], ':')[1];
     name = Frame::split(report_lines[2], ':')[1];
     time = std::stoi(Frame::split(report_lines[3], ':')[1]);
-
-    for (unsigned int i = 5; i < report_lines.size(); i++){
-        if (report_lines[i] == "general game updates:\n"){
-            i++;
-
-        }
+    unsigned int i = 5;
+    while (report_lines[i] != "team a updates"){
+        vector<string> pair = Frame::split(report_lines[i], ':');
+        game_updates[pair[0].substr(1)] = pair[1];
+        i++;
+    }
+    while (report_lines[i] != "team b updates"){
+        vector<string> pair = Frame::split(report_lines[i], ':');
+        team_a_updates[pair[0].substr(1)] = pair[1];
+        i++;
+    }
+    while (report_lines[i] != "description"){
+        vector<string> pair = Frame::split(report_lines[i], ':');
+        team_b_updates[pair[0].substr(1)] = pair[1];
+        i++;
+    }
+    while (++i < report_lines.size()){
+        description += report_lines[i];
     }
 
 }
