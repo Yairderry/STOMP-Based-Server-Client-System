@@ -1,4 +1,5 @@
 #include "../include/Event.h"
+#include "../include/Frame.h"
 #include "../include/json.hpp"
 #include <iostream>
 #include <fstream>
@@ -61,8 +62,21 @@ const std::string &Event::get_discription() const
     return this->description;
 }
 
-Event::Event(const std::string &frame_body) : team_a_name(""), team_b_name(""), name(""), time(0), game_updates(), team_a_updates(), team_b_updates(), description("")
+Event::Event(const std::string &frame_body) : team_a_name(""), team_b_name(""), name(""), time(0), game_updates(map<string, string>{}), team_a_updates(map<string, string>{}), team_b_updates(map<string, string>{}), description("")
 {
+    vector<string> report_lines = Frame::split(frame_body, '\n');
+    team_a_name = Frame::split(report_lines[0], ':')[1];
+    team_b_name = Frame::split(report_lines[1], ':')[1];
+    name = Frame::split(report_lines[2], ':')[1];
+    time = std::stoi(Frame::split(report_lines[3], ':')[1]);
+
+    for (unsigned int i = 5; i < report_lines.size(); i++){
+        if (report_lines[i] == "general game updates:\n"){
+            i++;
+
+        }
+    }
+
 }
 
 std::string &Event::toString(){
