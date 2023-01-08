@@ -5,7 +5,7 @@ User::User(string &username, string &password) : username(username), password(pa
 string User::getUsername() {return username;}
 string User::getPassword() {return password;}
 int User::getNextSID() {return nextSubscriptionId;}
-int User::getNextRID() {return nextReceiptId;}
+int User::getNextRID() {return nextReceiptId++;}
 int User::getSubscriptionId(string& game_name){
     return subsByName.find(game_name) == subsByName.end() ? -1 : subsByName[game_name];
 }

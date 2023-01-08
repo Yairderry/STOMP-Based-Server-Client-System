@@ -34,10 +34,10 @@ void StompProtocol::error(Frame &frame){
 void StompProtocol::receipt(Frame &frame){
     User &user = handler->getUser();
     string receiptId = frame.getHeader("receipt-id");
-    vector<string> receipt_args = Frame::split(receiptId, '-');
-    string action = receipt_args[0];
 
-    std::cout << frame.toString() << std::endl;
+    vector<string> receipt_args = Frame::split(receiptId, '-');
+
+    string action = receipt_args[0];
 
     if (action == "disconnect"){
         user.toggleConnected();

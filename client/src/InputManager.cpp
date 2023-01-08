@@ -74,7 +74,7 @@ void InputManager::report(string &file_path){
     User &user = handler->getUser();
     if (!user.getConnected()) return;
 
-    names_and_events game = parseEventsFile(file_path);
+    names_and_events game = parseEventsFile("./data/" + file_path);
     
     string destination = game.team_a_name + "_" + game.team_b_name;
     vector<Event> events = game.events;

@@ -92,7 +92,7 @@ SubscribeFrame::SubscribeFrame(string &destination, string &subscribeId, string 
 }
 
 UnsubscribeFrame::UnsubscribeFrame(string &subscribeId, string &receiptId) : Frame("UNSUBSCRIBE", map<string, string>{}, ""){
-    headers["subscribe-id"] = subscribeId;
+    headers["id"] = subscribeId;
     headers["receipt-id"] = receiptId;
 }
 

@@ -1,6 +1,7 @@
 #include "../include/Event.h"
 #include "../include/Frame.h"
 #include "../include/json.hpp"
+#include <boost/algorithm/string.hpp>
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -65,30 +66,37 @@ const std::string &Event::get_discription() const
 Event::Event(const std::string &frame_body) : team_a_name(""), team_b_name(""), name(""), time(0), game_updates(map<string, string>{}), team_a_updates(map<string, string>{}), team_b_updates(map<string, string>{}), description("")
 {
     vector<string> report_lines = Frame::split(frame_body, '\n');
-    team_a_name = Frame::split(report_lines[0], ':')[1];
-    team_b_name = Frame::split(report_lines[1], ':')[1];
-    name = Frame::split(report_lines[2], ':')[1];
-    time = std::stoi(Frame::split(report_lines[3], ':')[1]);
-    unsigned int i = 5;
-    while (report_lines[i] != "team a updates"){
+    team_a_name = Frame::split(report_lines[1], ':')[1];
+    team_b_name = Frame::split(report_lines[2], ':')[1];
+    name = Frame::split(report_lines[3], ':')[1];
+    time = std::stoi(Frame::split(report_lines[4], ':')[1]);
+
+    unsigned int i = 6;
+
+    while (report_lines[i] != "team a updates:"){
         vector<string> pair = Frame::split(report_lines[i], ':');
-        game_updates[pair[0].substr(1)] = pair[1];
+        boost::trim(pair[0]);
+        boost::trim(pair[1]);
+        game_updates[pair[0]] = pair[1];
         i++;
     }
-    while (report_lines[i] != "team b updates"){
+    while (report_lines[++i] != "team b updates:"){
         vector<string> pair = Frame::split(report_lines[i], ':');
-        team_a_updates[pair[0].substr(1)] = pair[1];
-        i++;
+        boost::trim(pair[0]);
+        boost::trim(pair[1]);
+        team_a_updates[pair[0]] = pair[1];
     }
-    while (report_lines[i] != "description"){
+
+    while (report_lines[++i] != "description:"){
         vector<string> pair = Frame::split(report_lines[i], ':');
-        team_b_updates[pair[0].substr(1)] = pair[1];
-        i++;
+        boost::trim(pair[0]);
+        boost::trim(pair[1]);
+        team_b_updates[pair[0]] = pair[1];
     }
+
     while (++i < report_lines.size()){
         description += report_lines[i];
     }
-
 }
 
 std::string &Event::toString(){
