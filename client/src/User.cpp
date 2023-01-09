@@ -12,14 +12,20 @@ int User::getSubscriptionId(string& game_name){
 string User::getChannelById(int id){
     return subsById.find(id) == subsById.end() ? "" : subsById[id];
 }
-void User::addSubscription(string& game_name, int){ 
+bool User::addSubscription(string& game_name, int){
+    if (subsByName.find(game_name) != subsByName.end())
+        return false;
     subsById[nextSubscriptionId] = game_name;
     subsByName[game_name] = nextSubscriptionId++;
+    return true;
 }
-void User::removeSubscription(string& game_name){
+bool User::removeSubscription(string& game_name){
+    if (subsByName.find(game_name) == subsByName.end())
+        return false;
     int id = subsByName[game_name];
     subsByName.erase(game_name);
     subsById.erase(id);
+    return true;
 }
 
 void User::toggleConnected(){

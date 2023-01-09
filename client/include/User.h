@@ -31,8 +31,8 @@ class User
         int getNextRID();
         int getSubscriptionId(string&);
         string getChannelById(int);
-        void addSubscription(string&, int);
-        void removeSubscription(string&);
+        bool addSubscription(string&, int);
+        bool removeSubscription(string&);
         void toggleConnected();
         bool getConnected();
         void addEvent(Event &, string &, string &);

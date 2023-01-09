@@ -27,14 +27,15 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    SocketListener socketListenerTask(handler);
-    InputManager inputManagerTask(handler);
+    SocketListener socket_listener(handler);
+    InputManager input_manager_task(handler);
 
-	std::thread socketListenerThread(&SocketListener::run, &socketListenerTask);
-	std::thread inputManagerThread(&InputManager::run, &inputManagerTask);
+    std::thread input_manager(&InputManager::run, &input_manager_task);
 
-    socketListenerThread.join();
-    inputManagerThread.join();
+    while (!handler->getShouldTerminate())
+        socket_listener.listen();
+    
+    input_manager.join();
 
 	return 0;
 }

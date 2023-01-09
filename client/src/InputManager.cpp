@@ -6,6 +6,8 @@
 InputManager::InputManager(ConnectionHandler *handler) : handler(handler) {}
 
 void InputManager::run(){
+
+    string input;
     while (!handler->getShouldTerminate()){
 
         // Get next command and parse it
@@ -28,7 +30,7 @@ void InputManager::run(){
         else if (command == "logout")
             logout();
     } 
-        std::cout << "input manager terminated" << std::endl;
+        std::cout << "Input manager thread terminated" << std::endl;
 
 }
 
@@ -50,7 +52,11 @@ void InputManager::join(string &game_name){
     
     string subscriptionId = std::to_string(user.getNextSID());
     string receiptId = "subscribe-" + std::to_string(user.getNextRID());
-    user.addSubscription(game_name, std::stoi(subscriptionId));
+    bool succeeded = user.addSubscription(game_name, std::stoi(subscriptionId));
+    if (!succeeded){
+        std::cout << "User already subscribed to this topic" << std::endl;
+        return;
+    }
 
     SubscribeFrame frame(game_name, subscriptionId, receiptId);
     string line = frame.toString();
@@ -64,7 +70,11 @@ void InputManager::exit(string &game_name){
     string subscriptionId = std::to_string(user.getSubscriptionId(game_name));
     string receiptId = "unsubscribe-" + std::to_string(user.getNextRID());
 
-    user.removeSubscription(game_name);
+    bool succeeded = user.removeSubscription(game_name);
+    if (!succeeded){
+        std::cout << "User is not subscribed to this topic" << std::endl;
+        return;
+    }
 
     UnsubscribeFrame frame(subscriptionId, receiptId);
     string line = frame.toString();
