@@ -41,7 +41,7 @@ void StompProtocol::receipt(Frame &frame){
     if (action == "disconnect"){
         user.toggleConnected();
         handler->setUser(nullptr);
-        //terminate???????????????????
+        handler->terminate();
         std::cout << "Goodbye" << std::endl;
     }
 }

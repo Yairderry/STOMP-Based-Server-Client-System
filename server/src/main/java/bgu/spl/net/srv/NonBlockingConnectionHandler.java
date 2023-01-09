@@ -48,9 +48,8 @@ public class NonBlockingConnectionHandler<T> implements ConnectionHandler<T> {
                 try {
                     while (buf.hasRemaining()) {
                         T nextMessage = encdec.decodeNextByte(buf.get());
-                        if (nextMessage != null) {
+                        if (nextMessage != null)
                             protocol.process(nextMessage);
-                        }
                     }
                 } finally {
                     releaseBuffer(buf);
@@ -114,6 +113,11 @@ public class NonBlockingConnectionHandler<T> implements ConnectionHandler<T> {
 
     @Override
     public void send(T msg) {
-        //IMPLEMENT IF NEEDED
+        writeQueue.add(ByteBuffer.wrap(encdec.encode(msg)));
+        reactor.updateInterestedOps(chan, SelectionKey.OP_READ | SelectionKey.OP_WRITE);
+    }
+
+    public MessagingProtocol<T> getProtocol() {
+        return protocol;
     }
 }

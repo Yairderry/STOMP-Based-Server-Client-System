@@ -11,7 +11,6 @@ void InputManager::run(){
     while (!handler->getShouldTerminate()){
 
         // Get next command and parse it
-        string input;
         getline(std::cin,input);
         vector<string> args = Frame::split(input, ' ');
         string command = args[0];
