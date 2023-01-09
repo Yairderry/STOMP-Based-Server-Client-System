@@ -75,7 +75,7 @@ void InputManager::report(string &file_path){
     User &user = handler->getUser();
     if (!user.getConnected()) return;
 
-    names_and_events game = parseEventsFile("./data/" + file_path);
+    names_and_events game = parseEventsFile(file_path);
     
     string destination = game.team_a_name + "_" + game.team_b_name;
     vector<Event> events = game.events;
@@ -92,10 +92,11 @@ void InputManager::report(string &file_path){
 
 void InputManager::summary(string &game_name, string &reporter_user, string &file_path){
     User &user = handler->getUser();
-
+    if (user.getSubscriptionId(game_name) == -1){
+        std::cout << "User is not subscribed to this topic" << std::endl;
+        return;
+    }
     vector<Event> &events = user.getEvents(game_name, reporter_user);
-    std::cout << events.size() << std::endl;
-    
     string output = "";
     vector<string> names = Frame::split(game_name, '_');
 

@@ -66,10 +66,10 @@ const std::string &Event::get_discription() const
 Event::Event(const std::string &frame_body) : team_a_name(""), team_b_name(""), name(""), time(0), game_updates(map<string, string>{}), team_a_updates(map<string, string>{}), team_b_updates(map<string, string>{}), description("")
 {
     vector<string> report_lines = Frame::split(frame_body, '\n');
-    team_a_name = Frame::split(report_lines[1], ':')[1];
-    team_b_name = Frame::split(report_lines[2], ':')[1];
-    name = Frame::split(report_lines[3], ':')[1];
-    time = std::stoi(Frame::split(report_lines[4], ':')[1]);
+    team_a_name = Frame::split(report_lines[1], ':')[1].substr(1);
+    team_b_name = Frame::split(report_lines[2], ':')[1].substr(1);
+    name = Frame::split(report_lines[3], ':')[1].substr(1);
+    time = std::stoi(Frame::split(report_lines[4], ':')[1].substr(1));
 
     unsigned int i = 6;
 
@@ -106,10 +106,11 @@ std::string &Event::toString(){
     output += "team b: " + this->team_b_name + "\n";
     output += "event name: " + this->name + "\n";
     output += "time: " + std::to_string(this->time) + "\n";
-    
+
     output += "general game updates:\n";
-    for (auto &update : this->game_updates)
+    for (auto &update : this->game_updates){
         output += "\t" + update.first + ": " + update.second + "\n";
+    }
 
     output += "team a updates:\n";
     for (auto &update : this->team_a_updates)

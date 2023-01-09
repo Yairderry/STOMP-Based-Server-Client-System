@@ -51,7 +51,7 @@ void StompProtocol::message(Frame &frame){
     string game_name = user.getChannelById(std::stoi(frame.getHeader("subscription")));
     vector<string> body_lines = Frame::split(frame.getBody(), '\n');
     string first_line = body_lines[0];
-    string reporter_user = first_line.substr(first_line.find(":"), first_line.size()-1); // possible bug
+    string reporter_user = first_line.substr(first_line.find(":") + 2, first_line.size()-1);
 
     Event reported_event(frame.getBody());
 
