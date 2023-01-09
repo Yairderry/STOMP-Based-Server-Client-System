@@ -7,10 +7,24 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 public class Database {
 
     // key: channel-name , value: list of users subscribed to the channel
-    private final HashMap<String, Set<User>> channels = new HashMap<>();
-    private final HashMap<String, ReadWriteLock> channelsLocks = new HashMap<>();
+    private final HashMap<String, Set<User>> channels;
+    private final HashMap<String, ReadWriteLock> channelsLocks;
     // key: username , value: user
-    private final HashMap<String, User> users = new HashMap<>();
+    private final HashMap<String, User> users;
+
+    private static class SingletonHolder {
+        private static Database db = new Database();
+    }
+
+    public static Database getInstance(){
+        return SingletonHolder.db;
+    }
+
+    private Database(){
+        channels = new HashMap<>();
+        channelsLocks = new HashMap<>();
+        users = new HashMap<>();
+    }
 
     public Set<User> getChannel(String channel) {
         return channels.getOrDefault(channel, null);
@@ -72,10 +86,6 @@ public class Database {
                 return "Wrong password";
             else if (user.getConnected())
                 return "User already logged in";
-            else {
-                user.toggleConnected();
-                user.setConnectionId(connectionId);
-            }
         }
         catch (Exception e){
             System.out.println(e);

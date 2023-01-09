@@ -15,7 +15,7 @@ public class StompMessagingProtocolImpl implements StompMessagingProtocol<String
     private int connectionId;
     private User connectedUser;
     private Connections<String> connections;
-    private final Database db = new Database();
+    private Database db;
     private int nextMessageId = 0;
 
     @Override
@@ -23,6 +23,7 @@ public class StompMessagingProtocolImpl implements StompMessagingProtocol<String
         this.connectionId = connectionId;
         this.connections = connections;
         this.connectedUser = null;
+        this.db = Database.getInstance();
     }
 
     @Override

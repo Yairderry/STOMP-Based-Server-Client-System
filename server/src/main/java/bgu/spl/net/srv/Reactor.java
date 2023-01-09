@@ -107,7 +107,9 @@ public class Reactor<T> implements Server<T> {
                 this);
         clientChan.register(selector, SelectionKey.OP_READ, handler);
 
-        connections.addConnection(handler, (StompMessagingProtocol<T>) handler.getProtocol());
+        pool.submit(handler, () -> {
+            connections.addConnection(handler, (StompMessagingProtocol<T>) handler.getProtocol());
+        });
     }
 
     private void handleReadWrite(SelectionKey key) {
