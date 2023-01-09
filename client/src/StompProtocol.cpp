@@ -43,6 +43,10 @@ void StompProtocol::receipt(Frame &frame){
         handler->setUser(nullptr);
         handler->terminate();
     }
+    else if (action == "subscribe")
+        std::cout << "Joined channel " << receipt_args[1] << std::endl;
+    else if (action == "unsubscribe")
+        std::cout << "Exited channel " << receipt_args[1] << std::endl;
 }
 
 void StompProtocol::message(Frame &frame){

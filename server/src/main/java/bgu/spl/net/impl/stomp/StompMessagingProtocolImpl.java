@@ -32,7 +32,7 @@ public class StompMessagingProtocolImpl implements StompMessagingProtocol<String
             System.out.println("/////////////Received Frame/////////////");
             System.out.println(frame);
             System.out.println("////////////////////////////////////////");
-            String errorMessage = "Invalid command";
+            String errorMessage = "Invalid command.";
             switch (frame.getCommand()) {
                 case "CONNECT":
                     errorMessage = Frame.isConnectFrame(frame);
@@ -73,7 +73,7 @@ public class StompMessagingProtocolImpl implements StompMessagingProtocol<String
                     error(frame, errorMessage);
             }
         } catch (Exception e) {
-            error(new Frame(), "Something went wrong");
+            error(new Frame(), "Something went wrong.");
         }
     }
 
@@ -132,7 +132,7 @@ public class StompMessagingProtocolImpl implements StompMessagingProtocol<String
         
         String channel = frame.getHeader("destination");
         if (db.getChannel(channel) == null)
-            error(frame, "Channel does not exist");
+            error(frame, "Channel does not exist.");
             
         Set<User> subscribedUsers = new HashSet<User>();
         try{
@@ -143,7 +143,7 @@ public class StompMessagingProtocolImpl implements StompMessagingProtocol<String
 
             // Validate subscription
             if (subscriptionId == null) {
-                error(frame, "User is not subscribed to this channel");
+                error(frame, "User is not subscribed to this channel.");
                 return;
             }
             
@@ -167,7 +167,7 @@ public class StompMessagingProtocolImpl implements StompMessagingProtocol<String
 
     private void error(Frame frame, String message) {
         if (frame.getHeaders() != null)
-            connections.send(connectionId, new ErrorFrame(frame.getHeader("receipt-id"), Frame.errorBody(frame, message)).toString());
+            connections.send(connectionId, new ErrorFrame(frame.getHeader("receipt"), Frame.errorBody(frame, message)).toString());
         else
             connections.send(connectionId, new ErrorFrame(null, "").toString());
         connections.disconnect(connectionId);
@@ -176,15 +176,14 @@ public class StompMessagingProtocolImpl implements StompMessagingProtocol<String
     }
 
     private void receipt(Frame frame) {
-        String receiptId = frame.getHeader("receipt-id");
-        if (receiptId != null){
+        String receiptId = frame.getHeader("receipt");
+        if (receiptId != null)
             connections.send(connectionId, new ReceiptFrame(receiptId).toString());
-        }
     }
 
     private boolean acknowledge(Frame frame){
         if (connectedUser == null) {
-            error(frame, "User is not connected");
+            error(frame, "User is not connected.");
             return true;
         }
         else {

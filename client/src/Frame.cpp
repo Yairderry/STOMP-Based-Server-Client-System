@@ -82,22 +82,22 @@ ConnectFrame::ConnectFrame(string &acceptVersion, string &host, string &login, s
 }
 
 DisconnectFrame::DisconnectFrame(string &receiptId) : Frame("DISCONNECT", map<string, string>{}, ""){
-    headers["receipt-id"] = receiptId;
+    headers["receipt"] = receiptId;
 }
 
 SubscribeFrame::SubscribeFrame(string &destination, string &subscribeId, string &receiptId) : Frame("SUBSCRIBE", map<string, string>{}, ""){
     headers["destination"] = destination;
     headers["id"] = subscribeId;
-    headers["receipt-id"] = receiptId;
+    headers["receipt"] = receiptId;
 }
 
 UnsubscribeFrame::UnsubscribeFrame(string &subscribeId, string &receiptId) : Frame("UNSUBSCRIBE", map<string, string>{}, ""){
     headers["id"] = subscribeId;
-    headers["receipt-id"] = receiptId;
+    headers["receipt"] = receiptId;
 }
 
 SendFrame::SendFrame(string &destination, string &receiptId, string &body) : Frame("SEND", map<string, string>{}, body){
     headers["destination"] = destination;
-    headers["receipt-id"] = receiptId;
+    headers["receipt"] = receiptId;
 }
 

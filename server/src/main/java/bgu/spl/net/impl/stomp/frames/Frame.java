@@ -1,6 +1,5 @@
 package bgu.spl.net.impl.stomp.frames;
 
-import java.io.Serializable;
 import java.util.Arrays;
 import java.util.HashMap;
 
@@ -73,47 +72,45 @@ public class Frame {
 
     public static String isConnectFrame(Frame frame) {
         if (!frame.headers.containsKey("accept-version"))
-            return "accept-version header is missing";
+            return "accept-version header is missing.";
         if (!frame.headers.get("accept-version").equals("1.2"))
-            return "accept-version header is not 1.2";
+            return "accept-version header is not 1.2.";
         if (!frame.headers.containsKey("host"))
-            return "host header is missing";
-        // if (!frame.headers.get("host").equals("1.2"))
-        //     return "host header is not stomp.cs.bgu.ac.il";
+            return "host header is missing.";
         if (!frame.headers.containsKey("login"))
-            return "login header is missing";
+            return "login header is missing.";
         if (!frame.headers.containsKey("passcode"))
-            return "passcode header is missing";
+            return "passcode header is missing.";
         return null;
     }
 
     public static String isDisconnectFrame(Frame frame) {
-        if (!frame.headers.containsKey("receipt-id"))
-            return "receipt-id header is missing";
+        if (!frame.headers.containsKey("receipt"))
+            return "receipt header is missing.";
         return null;
     }
 
     public static String isSubscribeFrame(Frame frame) {
         if (!frame.headers.containsKey("destination"))
-            return "destination header is missing";
+            return "destination header is missing.";
         if (!frame.headers.containsKey("id"))
-            return "id header is missing";
+            return "id header is missing.";
         if (!frame.headers.get("id").matches("[0-9]+"))
-            return "id header is not a number";
+            return "id header is not a number.";
         return null;
     }
 
     public static String isUnsubscribeFrame(Frame frame) {
         if (!frame.headers.containsKey("id"))
-            return "id header is missing";
+            return "id header is missing.";
         if (!frame.headers.get("id").matches("[0-9]+"))
-            return "id header is not a number";
+            return "id header is not a number.";
         return null;
     }
 
     public static String isSendFrame(Frame frame) {
         if (!frame.headers.containsKey("destination"))
-            return "destination header is missing";
+            return "destination header is missing.";
         return null;
     }
 }

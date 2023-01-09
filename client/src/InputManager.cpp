@@ -13,12 +13,18 @@ void InputManager::run(){
 
         // Get next command and parse it
         getline(std::cin,input);
+        if (input == "") continue;
         vector<string> args = Frame::split(input, ' ');
         string command = args[0];
 
         // Create frame and act accordingly
-        if (command == "login")
+        if (command == "login"){
+            if (args.size() != 4){
+                std::cout << "Could not connect to server." << std::endl;
+                continue;
+            }
             login(args[1], args[2], args[3]);
+        }
         else if (command == "join")
             join(args[1]);
         else if (command == "exit")
@@ -41,11 +47,16 @@ void InputManager::login(string &host_port, string &username, string &password){
         std::cout << "The client is already logged in, log out before trying again" << std::endl;
         return;
     }
-    handler->setUser(new User(username, password));
-    string version = "1.2";
-    ConnectFrame frame(version, host_port, username, password);
-    string line = frame.toString();
-    handler->sendLine(line);
+    try{
+        handler->setUser(new User(username, password));
+        string version = "1.2";
+        ConnectFrame frame(version, host_port, username, password);
+        string line = frame.toString();
+        handler->sendLine(line);
+    }
+    catch (const std::exception& e){
+        std::cout << "Could not connect to server." << std::endl;
+    }
 }
 
 void InputManager::join(string &game_name){
@@ -53,7 +64,7 @@ void InputManager::join(string &game_name){
     if (!user.getConnected()) return;
     
     string subscriptionId = std::to_string(user.getNextSID());
-    string receiptId = "subscribe-" + std::to_string(user.getNextRID());
+    string receiptId = "subscribe-" + game_name + "-" + std::to_string(user.getNextRID());
     bool succeeded = user.addSubscription(game_name, std::stoi(subscriptionId));
     if (!succeeded){
         std::cout << "User already subscribed to this topic" << std::endl;
@@ -70,7 +81,7 @@ void InputManager::exit(string &game_name){
     if (!user.getConnected()) return;
 
     string subscriptionId = std::to_string(user.getSubscriptionId(game_name));
-    string receiptId = "unsubscribe-" + std::to_string(user.getNextRID());
+    string receiptId = "unsubscribe-" + game_name + "-" + std::to_string(user.getNextRID());
 
     bool succeeded = user.removeSubscription(game_name);
     if (!succeeded){
