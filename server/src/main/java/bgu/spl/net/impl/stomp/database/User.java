@@ -1,11 +1,14 @@
 package bgu.spl.net.impl.stomp.database;
 
 import java.util.HashMap;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class User {
     private final String username;
     private final String passcode;
     private boolean connected = true;
+    private ReadWriteLock userLock;
 
     // key: subscription id, value: channel name
     private final HashMap<String, String> subscriptions;
@@ -16,6 +19,7 @@ public class User {
         this.passcode = _passcode;
         this.connectionId = _connectionId;
         this.subscriptions = new HashMap<>();
+        this.userLock = new ReentrantReadWriteLock();
     }
 
     public String getPasscode(){
@@ -59,5 +63,20 @@ public class User {
 
     public void clearSubscriptions(){
         subscriptions.clear();
+    }
+
+    public void lock(boolean write){
+        if (write)
+            this.userLock.writeLock().lock();
+        else
+            this.userLock.readLock().lock();
+    }
+
+    public void unlock(boolean write){
+        if (write)
+            this.userLock.writeLock().unlock();
+        else
+            this.userLock.readLock().unlock();
+
     }
 }

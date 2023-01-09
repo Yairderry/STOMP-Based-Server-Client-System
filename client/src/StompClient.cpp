@@ -31,11 +31,9 @@ int main(int argc, char *argv[]) {
     InputManager input_manager_task(handler);
 
     std::thread input_manager(&InputManager::run, &input_manager_task);
-
-    while (!handler->getShouldTerminate())
-        socket_listener.listen();
+    socket_listener.listen();
     
-    input_manager.join();
+    input_manager.join();    
 
 	return 0;
 }

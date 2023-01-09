@@ -3,12 +3,13 @@
 #include "../include/Frame.h"
 #include "../include/User.h"
 
-InputManager::InputManager(ConnectionHandler *handler) : handler(handler) {}
+InputManager::InputManager(ConnectionHandler *handler) : handler(handler){}
 
 void InputManager::run(){
 
     string input;
-    while (!handler->getShouldTerminate()){
+    bool allowInput = true;
+    while (!handler->getShouldTerminate() && allowInput){
 
         // Get next command and parse it
         getline(std::cin,input);
@@ -26,8 +27,10 @@ void InputManager::run(){
             report(args[1]);
         else if (command == "summary") 
             summary(args[1], args[2], args[3]);
-        else if (command == "logout")
+        else if (command == "logout"){
             logout();
+            allowInput = false;
+        }
     } 
         std::cout << "Input manager thread terminated" << std::endl;
 
@@ -156,5 +159,5 @@ void InputManager::logout(){
     DisconnectFrame frame(receiptId);
     string line = frame.toString();
     handler->sendLine(line);
-}
+    }
 

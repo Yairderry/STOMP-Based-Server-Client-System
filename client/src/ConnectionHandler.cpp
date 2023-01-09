@@ -24,6 +24,7 @@ bool ConnectionHandler::getShouldTerminate(){
 
 void ConnectionHandler::terminate(){
 	shouldTerminate = true;
+	std::cout << "Goodbye" << std::endl;
 }
 
 void ConnectionHandler::setUser(User *user){

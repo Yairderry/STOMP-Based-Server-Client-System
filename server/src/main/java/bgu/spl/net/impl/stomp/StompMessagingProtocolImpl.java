@@ -1,5 +1,6 @@
 package bgu.spl.net.impl.stomp;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import bgu.spl.net.api.StompMessagingProtocol;
@@ -92,11 +93,20 @@ public class StompMessagingProtocolImpl implements StompMessagingProtocol<String
         if (acknowledge(frame))
             return;
 
-        // remove user from channels and clear its subscriptions
-        db.removeUserFromChannels(connectedUser);
+        try{
+            connectedUser.lock(true);
 
-        // disconnect socket
-        connectedUser.toggleConnected();
+            // remove user from channels and clear its subscriptions
+            db.removeUserFromChannels(connectedUser);
+    
+            // disconnect socket
+            shouldTerminate = true;
+            connectedUser.toggleConnected();
+        }
+        finally{
+            connectedUser.unlock(true);
+        }
+
         connectedUser = null;
     }
 
@@ -119,21 +129,37 @@ public class StompMessagingProtocolImpl implements StompMessagingProtocol<String
     private void send(Frame frame) {
         if (acknowledge(frame))
             return;
+        
         String channel = frame.getHeader("destination");
-        String subscriptionId = connectedUser.getSubscriptionId(channel);
+        Set<User> subscribedUsers = new HashSet<User>();
+        try{
+            connectedUser.lock(false);
+            db.lock(channel, false);
 
-        // Validate subscription
-        if (subscriptionId == null) {
-            error(frame, "User is not subscribed to this channel");
-            return;
+            String subscriptionId = connectedUser.getSubscriptionId(channel);
+
+            // Validate subscription
+            if (subscriptionId == null) {
+                error(frame, "User is not subscribed to this channel");
+                return;
+            }
+            
+            subscribedUsers = db.getChannel(channel);
+
+            for (User user : subscribedUsers){
+                if (user.getConnectionId() != connectionId) user.lock(false);
+                // Generate and send message frame to the channel
+                Frame messageFrame = new MessageFrame(user.getSubscriptionId(channel), "" + nextMessageId++, channel, frame.getBody());
+                connections.send(user.getConnectionId(), messageFrame.toString());
+            }
+        }
+        finally{
+            db.unlock(channel, false);
+            for (User user : subscribedUsers)
+                user.unlock(false);
         }
 
-        Set<User> subscribedUsers = db.getChannel(channel);
-        for (User user : subscribedUsers){
-            // Generate and send message frame to the channel
-        Frame messageFrame = new MessageFrame(user.getSubscriptionId(channel), "" + nextMessageId++, channel, frame.getBody());
-        connections.send(user.getConnectionId(), messageFrame.toString());
-        }
+
     }
 
     private void error(Frame frame, String message) {
