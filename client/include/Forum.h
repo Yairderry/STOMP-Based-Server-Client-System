@@ -16,7 +16,7 @@ private:
     map<string, map<string, vector<Event>>> forum;
 public:
     Forum();
-    vector<Event> &getEvents(string&, string&);
+    void getEvents(vector<Event> &, string&, string&);
     void addEvent(Event &, string &, string &);
 
 };

@@ -96,7 +96,9 @@ void InputManager::summary(string &game_name, string &reporter_user, string &fil
         std::cout << "User is not subscribed to this topic" << std::endl;
         return;
     }
-    vector<Event> &events = user.getEvents(game_name, reporter_user);
+    vector<Event> events = vector<Event>{};
+    user.getEvents(events, game_name, reporter_user);
+
     string output = "";
     vector<string> names = Frame::split(game_name, '_');
 
@@ -107,24 +109,18 @@ void InputManager::summary(string &game_name, string &reporter_user, string &fil
     map<string, string> team_b_stats;
     string game_events = "Game event reports:\n";
 
-    for (Event &event : events){
+    for (unsigned int i = 0; i < events.size(); i++){
+        Event &event = events[i];
+
         game_events +=  event.summarize();
-        std::cout << "hey1" << std::endl;
 
         for (auto pair : event.get_game_updates())
             general_stats[pair.first] = pair.second;
-                std::cout << "hey2" << std::endl;
-
         for (auto pair : event.get_team_a_updates())
             team_a_stats[pair.first] = pair.second;
-                std::cout << "hey3" << std::endl;
-
         for (auto pair : event.get_team_b_updates())
-            team_b_stats[pair.first] = pair.second;  
-                std::cout << "hey4" << std::endl;
-  
+            team_b_stats[pair.first] = pair.second;    
     }
-    std::cout << "hey5" << std::endl;
 
     output += "General stats:\n";
     for (auto pair : general_stats)
@@ -135,21 +131,12 @@ void InputManager::summary(string &game_name, string &reporter_user, string &fil
     output += names[1] + " stats:\n";
     for (auto pair : team_b_stats)
         output += pair.first + ": " + pair.second + '\n';
-    std::cout << "hey6" << std::endl;
 
     output += game_events;
-    std::cout << "hey7" << std::endl;
 
     std::ofstream outputFile(file_path, std::ofstream::trunc);
-        std::cout << "hey8" << std::endl;
-
     outputFile << output << std::endl;
-        std::cout << "hey9" << std::endl;
-
     outputFile.close();
-        std::cout << "hey10" << std::endl;
-
-    
 }
 
 void InputManager::logout(){

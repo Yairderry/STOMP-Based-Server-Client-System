@@ -34,7 +34,6 @@ void User::addEvent(Event &reported_event, string &game_name, string &reporter_u
     forum.addEvent(reported_event, game_name, reporter_user);
 }
 
-vector<Event> &User::getEvents(string &game_name, string &user){
-    vector<Event> &event = forum.getEvents(game_name, user);
-    return event;
+void User::getEvents(vector<Event> &events, string &game_name, string &user){
+    forum.getEvents(events, game_name, user);
 }

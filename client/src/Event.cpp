@@ -128,7 +128,6 @@ std::string &Event::toString(){
 string &Event::summarize(){
     std::string &output = *new std::string();
     output += std::to_string(this->time) + " - " + this->name + ":\n\n" + this->description + "\n\n";
-    std::cout << output << std::endl;
     return output;
 }
 

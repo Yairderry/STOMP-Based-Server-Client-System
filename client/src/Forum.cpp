@@ -1,20 +1,17 @@
 #include "../include/Forum.h"
 #include <algorithm>
+#include <boost/optional.hpp>
 
 
 Forum::Forum() : forum(map<string, map<string, vector<Event>>>{}){}
 
-vector<Event> &Forum::getEvents(string &game_name, string &user){
-    vector<Event> not_exist = vector<Event>{};
-
+void Forum::getEvents(vector<Event> &events, string &game_name, string &user){
     if (forum.find(game_name) == forum.end())
-        return not_exist;
+        return;
     if (forum[game_name].find(user) == forum[game_name].end())
-        return not_exist;
+        return;
 
-    vector<Event> &output = forum[game_name][user];
-
-    return output;
+    events = forum[game_name][user];
 }
 
 void Forum::addEvent(Event &reported_event, string &game_name, string &reporter_user){
