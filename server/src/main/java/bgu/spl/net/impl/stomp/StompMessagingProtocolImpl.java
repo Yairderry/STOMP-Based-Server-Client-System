@@ -170,9 +170,12 @@ public class StompMessagingProtocolImpl implements StompMessagingProtocol<String
             connections.send(connectionId, new ErrorFrame(frame.getHeader("receipt"), Frame.errorBody(frame, message)).toString());
         else
             connections.send(connectionId, new ErrorFrame(null, "").toString());
+            
+        connectedUser.toggleConnected();
+        connectedUser = null;
+
         connections.disconnect(connectionId);
         shouldTerminate = true;
-//        connectedUser = null;
     }
 
     private void receipt(Frame frame) {
