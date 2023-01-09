@@ -11,6 +11,7 @@ public class Database {
     private final HashMap<String, ReadWriteLock> channelsLocks;
     // key: username , value: user
     private final HashMap<String, User> users;
+    int nextMessageId = 0;
 
     private static class SingletonHolder {
         private static Database db = new Database();
@@ -126,6 +127,10 @@ public class Database {
         else
             channelsLocks.get(channel).readLock().unlock();
 
+    }
+
+    public int getNextMessageId(){
+        return nextMessageId++;
     }
 
 }

@@ -16,7 +16,6 @@ public class StompMessagingProtocolImpl implements StompMessagingProtocol<String
     private User connectedUser;
     private Connections<String> connections;
     private Database db;
-    private int nextMessageId = 0;
 
     @Override
     public void start(int connectionId, Connections<String> connections) {
@@ -132,6 +131,9 @@ public class StompMessagingProtocolImpl implements StompMessagingProtocol<String
             return;
         
         String channel = frame.getHeader("destination");
+        if (db.getChannel(channel) == null)
+            error(frame, "Channel does not exist");
+            
         Set<User> subscribedUsers = new HashSet<User>();
         try{
             connectedUser.lock(false);
@@ -150,7 +152,7 @@ public class StompMessagingProtocolImpl implements StompMessagingProtocol<String
             for (User user : subscribedUsers){
                 if (user.getConnectionId() != connectionId) user.lock(false);
                 // Generate and send message frame to the channel
-                Frame messageFrame = new MessageFrame(user.getSubscriptionId(channel), "" + nextMessageId++, channel, frame.getBody());
+                Frame messageFrame = new MessageFrame(user.getSubscriptionId(channel), "" + db.getNextMessageId(), channel, frame.getBody());
                 connections.send(user.getConnectionId(), messageFrame.toString());
             }
         }
