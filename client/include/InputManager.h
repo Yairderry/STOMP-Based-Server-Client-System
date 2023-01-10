@@ -14,7 +14,7 @@ private:
 
 public:
     InputManager(ConnectionHandler*);
-    void run();
+    void read();
     void login(string &, string &, string &);
     void join(string &);
     void exit(string &);

@@ -5,7 +5,7 @@
 
 InputManager::InputManager(ConnectionHandler *handler) : handler(handler){}
 
-void InputManager::run(){
+void InputManager::read(){
 
     string input;
     bool allowInput = true;
@@ -41,8 +41,6 @@ void InputManager::run(){
             std::cout << "Invalid command." << std::endl;
         }
     } 
-        std::cout << "Input manager thread terminated" << std::endl;
-
 }
 
 void InputManager::login(string &host_port, string &username, string &password){

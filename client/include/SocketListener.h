@@ -13,5 +13,5 @@ private:
 
 public:
     SocketListener(ConnectionHandler*);
-    void listen();
+    void run();
 };

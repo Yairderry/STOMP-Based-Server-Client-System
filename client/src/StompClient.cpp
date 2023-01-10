@@ -27,13 +27,13 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    SocketListener socket_listener(handler);
-    InputManager input_manager_task(handler);
+    SocketListener socket_listener_task(handler);
+    InputManager input_manager(handler);
 
-    std::thread input_manager(&InputManager::run, &input_manager_task);
-    socket_listener.listen();
+    std::thread socket_listener_thread(&SocketListener::run, &socket_listener_task);
+    input_manager.read();
     
-    input_manager.join();    
+    socket_listener_thread.join();    
 
 	return 0;
 }

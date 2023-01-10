@@ -6,7 +6,7 @@
 
 SocketListener::SocketListener(ConnectionHandler *handler) : handler(handler){}
 
-void SocketListener::listen(){
+void SocketListener::run(){
     while (!handler->getShouldTerminate()){
         string input;
         handler->getFrameAscii(input, '\0');
@@ -18,4 +18,5 @@ void SocketListener::listen(){
 
         handler->protocolProccess(frame);
     }
+    std::cout << "Socket closed." << std::endl;
 }
