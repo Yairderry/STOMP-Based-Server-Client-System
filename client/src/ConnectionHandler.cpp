@@ -18,43 +18,6 @@ ConnectionHandler::~ConnectionHandler() {
 	close();
 }
 
-// // copy constructor
-// ConnectionHandler::ConnectionHandler(const ConnectionHandler &other) : host_(other.host_), port_(other.port_), io_service_(),
-//                                                                 socket_(io_service_), user(other.user->clone()), protocol(other.protocol->clone()){}
-
-// // move constructor
-// ConnectionHandler::ConnectionHandler(ConnectionHandler &&other) noexcept : host_(other.host_), port_(other.port_), io_service_(),
-//                                                                 socket_(other.io_service_), user(other.user), protocol(other.protocol){
-// 	other.user = nullptr;
-//     other.protocol = nullptr;
-// }
-
-// ConnectionHandler &ConnectionHandler::operator=(const ConnectionHandler &other){ // copy assignment operator
-// 	if (this != &other) {
-//         host_= other.host_;
-//         port_ = other.port_;
-//         socket_ = other.socket_;
-//         *user = *other.user;
-// 		*protocol = *other.protocol;
-//     }
-//     return *this;
-// }
-// ConnectionHandler &ConnectionHandler::operator=(ConnectionHandler &&other) noexcept { // move assignment operator
-// 	host_ = other.host_;
-//     port_ = other.port_;
-//     socket_ = other.socket_;
-
-//     if (user) delete user;
-//     user = other.user;
-//     other.user = nullptr;
-
-// 	if (protocol) delete protocol;
-//     protocol = other.protocol;
-//     other.protocol = nullptr;
-
-//     return *this;
-// }
-
 bool ConnectionHandler::getShouldTerminate(){
 	return shouldTerminate;
 }
