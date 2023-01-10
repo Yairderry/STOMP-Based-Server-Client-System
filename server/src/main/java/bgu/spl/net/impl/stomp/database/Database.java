@@ -96,6 +96,7 @@ public class Database {
         finally{
             user.unlock(true);
         }
+        user.setConnectionId(connectionId);
         return "Login successful";
     }
 

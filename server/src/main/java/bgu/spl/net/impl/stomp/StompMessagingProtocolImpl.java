@@ -150,7 +150,6 @@ public class StompMessagingProtocolImpl implements StompMessagingProtocol<String
             }
             
             subscribedUsers = db.getChannel(channel);
-
             for (User user : subscribedUsers){
                 if (user.getConnectionId() != connectionId) user.lock(false);
                 // Generate and send message frame to the channel

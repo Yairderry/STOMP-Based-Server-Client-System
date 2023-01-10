@@ -114,6 +114,7 @@ public class NonBlockingConnectionHandler<T> implements ConnectionHandler<T> {
     @Override
     public synchronized void send(T msg) {
         if (msg != null){
+            System.out.println("--------------Sent Frame--------------\n"+msg.toString()+"\n--------------End Sent Frame--------------");
             writeQueue.add(ByteBuffer.wrap(encdec.encode(msg)));
             reactor.updateInterestedOps(chan, SelectionKey.OP_READ | SelectionKey.OP_WRITE);
         }

@@ -126,6 +126,7 @@ bool ConnectionHandler::getFrameAscii(std::string &frame, char delimiter) {
 }
 
 bool ConnectionHandler::sendFrameAscii(const std::string &frame, char delimiter) {
+	std::cout << "///////////////Sent Frame//////////////\n" << frame << "\n///////////////End Sent Frame///////////////" << std::endl;
 	bool result = sendBytes(frame.c_str(), frame.length());
 	if (!result) return false;
 	return sendBytes(&delimiter, 1);
