@@ -73,6 +73,7 @@ ConnectionHandler* InputManager::login(string &host_port, string &username, stri
         std::cout << "The client is already logged in, log out before trying again" << std::endl;
         return handler;
     }
+    return nullptr;
 }
 
 void InputManager::join(string &game_name){

@@ -17,7 +17,20 @@ ConnectionHandler::ConnectionHandler(string host, short port) : host_(host), por
 }
 
 ConnectionHandler::~ConnectionHandler() {
+	delete user;
+	delete protocol;
 	close();
+}
+
+// copy constructor
+ConnectionHandler::ConnectionHandler(const ConnectionHandler &other) : host_(other.host_), port_(other.port_), io_service_(),
+                                                                socket_(io_service_), user(other.user->clone()), protocol(other.protocol->clone()){}
+
+// move constructor
+ConnectionHandler::ConnectionHandler(ConnectionHandler &&other) noexcept : host_(other.host_), port_(other.port_), io_service_(),
+                                                                socket_(other.io_service_), user(other.user), protocol(other.protocol){
+	other.user = nullptr;
+    other.protocol = nullptr;
 }
 
 bool ConnectionHandler::getShouldTerminate(){

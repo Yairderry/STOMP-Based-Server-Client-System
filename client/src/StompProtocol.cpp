@@ -4,6 +4,7 @@
 #include "../include/User.h"
 
 StompProtocol::StompProtocol() : handler(nullptr){}
+StompProtocol *StompProtocol::clone(){return new StompProtocol(*this);}
 
 void StompProtocol::proccess(Frame &frame){
     string command = frame.getCommand();

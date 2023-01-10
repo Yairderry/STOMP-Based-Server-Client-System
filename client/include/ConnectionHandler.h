@@ -23,7 +23,9 @@ private:
 public:
 	ConnectionHandler(std::string host, short port);
 
-	virtual ~ConnectionHandler();
+	virtual ~ConnectionHandler(); // destructor
+	ConnectionHandler(const ConnectionHandler &); // copy constructor
+    ConnectionHandler(ConnectionHandler &&) noexcept ; // move constructor
 
 	bool getShouldTerminate();
 	void terminate();

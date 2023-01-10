@@ -9,6 +9,8 @@ private:
     ConnectionHandler *handler;
 public:
     StompProtocol();
+    StompProtocol *clone();
+    
     void proccess(Frame &frame);
     void connected(Frame &frame);
     void error(Frame &frame);

@@ -23,6 +23,7 @@ class User
 
     public:
         User(string&, string&);
+        User *clone();
 
         string getUsername();
         string getPassword();
