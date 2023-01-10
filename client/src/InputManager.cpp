@@ -13,7 +13,7 @@ void InputManager::run(){
 
         // Get next command and parse it
         getline(std::cin,input);
-        if (input == "") continue;
+        if (handler->getShouldTerminate() || !allowInput) continue;
         vector<string> args = Frame::split(input, ' ');
         string command = args[0];
 
@@ -102,7 +102,7 @@ void InputManager::report(string &file_path){
     
     string destination = game.team_a_name + "_" + game.team_b_name;
     vector<Event> events = game.events;
-    std::sort(events.begin(), events.end(), [](const Event & a, const Event & b) -> bool{ return a.get_time() < b.get_time(); });
+    sortEvents(events);
 
     for (Event event : events){
         string body = "user: " + user.getUsername() + "\n" + event.toString();

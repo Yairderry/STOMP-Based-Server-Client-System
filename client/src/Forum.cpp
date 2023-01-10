@@ -22,5 +22,4 @@ void Forum::addEvent(Event &reported_event, string &game_name, string &reporter_
 
     vector<Event> &user_reports = forum[game_name][reporter_user];
     user_reports.push_back(reported_event);
-    std::sort(user_reports.begin(), user_reports.end(), [](const Event & a, const Event & b) -> bool{ return a.get_time() < b.get_time(); });
 }
