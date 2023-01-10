@@ -3,7 +3,7 @@
 #include "../include/ConnectionHandler.h"
 #include "../include/User.h"
 
-StompProtocol::StompProtocol(){}
+StompProtocol::StompProtocol() : handler(nullptr){}
 
 void StompProtocol::proccess(Frame &frame){
     string command = frame.getCommand();

@@ -18,7 +18,6 @@ class User
         int nextReceiptId;
         map<string, int> subsByName;
         map<int, string> subsById;
-        map<string, vector<Event>> games;
         bool connected = false;
         Forum forum;
 

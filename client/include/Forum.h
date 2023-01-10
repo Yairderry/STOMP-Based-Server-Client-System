@@ -1,7 +1,7 @@
 #pragma once
-#include <map>;
-#include <vector>;
-#include <string>;
+#include <map>
+#include <vector>
+#include <string>
 #include "Event.h"
 
 // class Frame;

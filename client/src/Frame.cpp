@@ -7,14 +7,13 @@ Frame::Frame(string command, map<string, string> headers, string body) : command
                                                                          headers(std::move(headers)),
                                                                          body(std::move(body)) {}
 
-Frame::Frame(const string &frame) {
+Frame::Frame(const string &frame) : command(""), headers(map<string, string>{}), body("") {
     vector<string> lines = split(frame, '\n');
     command = lines[0];
-    headers = map<string, string>{};
 
-    unsigned int startOfBody = -1;
+    int startOfBody = -1;
 
-    for (unsigned int i = 1; i < lines.size(); i++) {
+    for (int i = 1; i < (int) lines.size(); i++) {
         if (lines[i].empty()) {
             startOfBody = i + 1;
             break;
@@ -22,11 +21,10 @@ Frame::Frame(const string &frame) {
         vector<string> header = split(lines[i], ':');
         headers[header[0]] = header[1];
     }
-    body = "";
     if (startOfBody != -1){
-        for (unsigned int i = startOfBody; i < lines.size(); i++) {
+        for (int i = startOfBody; i < (int) lines.size(); i++) {
             body += lines[i];
-            if (i != lines.size() - 1)
+            if (i != (int) lines.size() - 1)
                 body += '\n';
         }
     }
