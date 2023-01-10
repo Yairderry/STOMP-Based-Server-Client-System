@@ -86,7 +86,7 @@ public class StompMessagingProtocolImpl implements StompMessagingProtocol<String
 
             // Assign connected user
             this.connectedUser = db.getUser(frame.getHeader("login"));
-            if (!connectedUser.getConnected()) connectedUser.toggleConnected();
+            if (!connectedUser.getConnected()) connectedUser.connect();
         }
     }
 
@@ -103,7 +103,7 @@ public class StompMessagingProtocolImpl implements StompMessagingProtocol<String
             // disconnect socket
             shouldTerminate = true;
             connections.disconnect(connectionId);
-            connectedUser.toggleConnected();
+            connectedUser.disconnect();
         }
         finally{
             connectedUser.unlock(true);
@@ -173,7 +173,7 @@ public class StompMessagingProtocolImpl implements StompMessagingProtocol<String
             connections.send(connectionId, new ErrorFrame(null, "").toString());
         
         if (connectedUser != null){
-            connectedUser.toggleConnected();
+            connectedUser.disconnect();
             connectedUser = null;
         }
 

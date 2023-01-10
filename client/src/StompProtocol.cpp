@@ -26,8 +26,9 @@ void StompProtocol::connected(Frame &frame){
 void StompProtocol::error(Frame &frame){
     std::cout << frame.toString() << std::endl;
 
-    handler->setUser(nullptr);
-    handler->terminate();    
+    // handler->setUser(nullptr);
+    handler->terminate();
+    handler = nullptr;    
 }
 
 void StompProtocol::receipt(Frame &frame){

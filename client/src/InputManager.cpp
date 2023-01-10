@@ -11,6 +11,9 @@ void InputManager::read(SocketListener &listener){
     string input;
     while (1){
 
+        if (handler != nullptr && handler->getShouldTerminate())
+            handler = nullptr;
+            
         // Get next command and parse it
         getline(std::cin,input);
         if (input == "") continue;
@@ -43,9 +46,8 @@ void InputManager::read(SocketListener &listener){
             logout();
             handler = nullptr;
         }
-        else{
+        else
             std::cout << "Invalid command." << std::endl;
-        }
     } 
 }
 

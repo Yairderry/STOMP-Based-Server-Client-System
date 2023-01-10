@@ -31,8 +31,12 @@ public class User {
         return connected;
     }
 
-    public void toggleConnected(){
-        connected = !connected;
+    public void disconnect(){
+        connected = false;
+    }
+
+    public void connect(){
+        connected = true;
     }
 
     public int getConnectionId(){
