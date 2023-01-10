@@ -37,6 +37,9 @@ void InputManager::run(){
             logout();
             allowInput = false;
         }
+        else{
+            std::cout << "Invalid command." << std::endl;
+        }
     } 
         std::cout << "Input manager thread terminated" << std::endl;
 
