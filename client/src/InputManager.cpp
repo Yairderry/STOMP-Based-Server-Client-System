@@ -2,18 +2,19 @@
 #include "../include/ConnectionHandler.h"
 #include "../include/Frame.h"
 #include "../include/User.h"
+#include "../include/SocketListener.h"
 
-InputManager::InputManager(ConnectionHandler *handler) : handler(handler){}
+InputManager::InputManager() : handler(nullptr){}
 
-void InputManager::read(){
+void InputManager::read(SocketListener &listener){
 
     string input;
     bool allowInput = true;
-    while (!handler->getShouldTerminate() && allowInput){
+    while (allowInput){
 
         // Get next command and parse it
         getline(std::cin,input);
-        if (handler->getShouldTerminate() || !allowInput || input == "") continue;
+        if (!allowInput || input == "") continue;
         vector<string> args = Frame::split(input, ' ');
         string command = args[0];
 
@@ -23,7 +24,12 @@ void InputManager::read(){
                 std::cout << "Could not connect to server." << std::endl;
                 continue;
             }
-            login(args[1], args[2], args[3]);
+            ConnectionHandler *handler = login(args[1], args[2], args[3]);
+            listener.setHandler(handler);
+        }
+        else if (handler == nullptr){
+            std::cout << "Client is not logged in to any user, please login." << std::endl;
+            continue;
         }
         else if (command == "join")
             join(args[1]);
@@ -43,20 +49,27 @@ void InputManager::read(){
     } 
 }
 
-void InputManager::login(string &host_port, string &username, string &password){
-    if (handler->isLoggedIn()){
+ConnectionHandler* InputManager::login(string &host_port, string &username, string &password){
+    if (handler == nullptr){
+        vector<string> host_and_port = Frame::split(host_port, ':');
+        handler = new ConnectionHandler(host_and_port[0], stoi(host_and_port[1]));
+        if (handler->connect()){
+            try{
+                handler->setUser(new User(username, password));
+                string version = "1.2";
+                ConnectFrame frame(version, host_port, username, password);
+                string line = frame.toString();
+                handler->sendFrameAscii(line, '\0');
+                return handler;
+            }
+            catch (const std::exception& e){
+                std::cout << "Could not connect to server." << std::endl;
+            }
+        }
+    }
+    else{
         std::cout << "The client is already logged in, log out before trying again" << std::endl;
-        return;
-    }
-    try{
-        handler->setUser(new User(username, password));
-        string version = "1.2";
-        ConnectFrame frame(version, host_port, username, password);
-        string line = frame.toString();
-        handler->sendFrameAscii(line, '\0');
-    }
-    catch (const std::exception& e){
-        std::cout << "Could not connect to server." << std::endl;
+        return handler;
     }
 }
 
@@ -171,5 +184,9 @@ void InputManager::logout(){
     DisconnectFrame frame(receiptId);
     string line = frame.toString();
     handler->sendFrameAscii(line, '\0');
-    }
+}
+
+void InputManager::setHandler(ConnectionHandler *handler){
+    this->handler = handler;
+}
 

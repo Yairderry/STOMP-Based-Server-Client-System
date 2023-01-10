@@ -4,9 +4,10 @@
 #include <boost/algorithm/string.hpp>
 
 
-SocketListener::SocketListener(ConnectionHandler *handler) : handler(handler){}
+SocketListener::SocketListener() : handler(nullptr){}
 
 void SocketListener::run(){
+    while (handler == nullptr){}
     while (!handler->getShouldTerminate()){
         string input;
         handler->getFrameAscii(input, '\0');
@@ -19,4 +20,8 @@ void SocketListener::run(){
         handler->protocolProccess(frame);
     }
     std::cout << "Socket closed." << std::endl;
+}
+
+void SocketListener::setHandler(ConnectionHandler *handler){
+    this->handler = handler;
 }

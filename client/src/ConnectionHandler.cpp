@@ -12,7 +12,9 @@ using std::endl;
 using std::string;
 
 ConnectionHandler::ConnectionHandler(string host, short port) : host_(host), port_(port), io_service_(),
-                                                                socket_(io_service_), user(nullptr), protocol(nullptr){}
+                                                                socket_(io_service_), user(nullptr), protocol(new StompProtocol()){
+	protocol->setHandler(this);
+}
 
 ConnectionHandler::~ConnectionHandler() {
 	close();

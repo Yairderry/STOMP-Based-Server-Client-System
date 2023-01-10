@@ -12,6 +12,7 @@ private:
     ConnectionHandler *handler;
 
 public:
-    SocketListener(ConnectionHandler*);
+    SocketListener();
     void run();
+    void setHandler(ConnectionHandler *);
 };
