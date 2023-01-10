@@ -1,23 +1,24 @@
 package bgu.spl.net.impl.stomp.database;
 
 import java.util.HashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class User {
     private final String username;
     private final String passcode;
-    private boolean connected = true;
+    private volatile boolean connected = true;
     private ReadWriteLock userLock;
 
     // key: subscription id, value: channel name
     private final HashMap<String, String> subscriptions;
-    private int connectionId;
+    private AtomicInteger connectionId;
 
     public User(String _username, String _passcode, int _connectionId){
         this.username = _username;
         this.passcode = _passcode;
-        this.connectionId = _connectionId;
+        this.connectionId = new AtomicInteger(_connectionId);
         this.subscriptions = new HashMap<>();
         this.userLock = new ReentrantReadWriteLock();
     }
@@ -35,11 +36,11 @@ public class User {
     }
 
     public int getConnectionId(){
-        return connectionId;
+        return connectionId.get();
     }
 
     public void setConnectionId(int _connectionId){
-        this.connectionId = _connectionId;
+        this.connectionId.compareAndSet(connectionId.get(), _connectionId);
     }
 
     public void addSubscription(String subscriptionId, String channel){

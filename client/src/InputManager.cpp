@@ -13,7 +13,7 @@ void InputManager::run(){
 
         // Get next command and parse it
         getline(std::cin,input);
-        if (handler->getShouldTerminate() || !allowInput) continue;
+        if (handler->getShouldTerminate() || !allowInput || input == "") continue;
         vector<string> args = Frame::split(input, ' ');
         string command = args[0];
 

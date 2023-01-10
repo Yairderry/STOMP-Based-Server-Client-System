@@ -11,7 +11,7 @@ import bgu.spl.net.srv.Connections;
 
 public class StompMessagingProtocolImpl implements StompMessagingProtocol<String> {
 
-    private boolean shouldTerminate = false;
+    private volatile boolean shouldTerminate = false;
     private int connectionId;
     private User connectedUser;
     private Connections<String> connections;
@@ -102,6 +102,7 @@ public class StompMessagingProtocolImpl implements StompMessagingProtocol<String
     
             // disconnect socket
             shouldTerminate = true;
+            connections.disconnect(connectionId);
             connectedUser.toggleConnected();
         }
         finally{

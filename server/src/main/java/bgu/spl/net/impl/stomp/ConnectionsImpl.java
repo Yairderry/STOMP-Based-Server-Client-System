@@ -5,11 +5,12 @@ import bgu.spl.net.srv.ConnectionHandler;
 import bgu.spl.net.srv.Connections;
 
 import java.util.HashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public final class ConnectionsImpl<T> implements Connections<T> {
 
     private final HashMap<Integer, ConnectionHandler<T>> connections = new HashMap<>();
-    int nextConnectionId = 0;
+    AtomicInteger nextConnectionId = new AtomicInteger(0);
 
     @Override
     public boolean send(int connectionId, T msg) {
@@ -31,8 +32,8 @@ public final class ConnectionsImpl<T> implements Connections<T> {
     }
 
     public void addConnection(ConnectionHandler<T> connectionHandler, StompMessagingProtocol<T> protocol) {
-        connections.put(nextConnectionId, connectionHandler);
-        protocol.start(nextConnectionId++, this);
+        connections.put(nextConnectionId.get(), connectionHandler);
+        protocol.start(nextConnectionId.getAndIncrement(), this);
     }
 
 }

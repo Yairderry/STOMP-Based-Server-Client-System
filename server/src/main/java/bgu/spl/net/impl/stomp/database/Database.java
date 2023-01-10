@@ -1,6 +1,7 @@
 package bgu.spl.net.impl.stomp.database;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -11,7 +12,7 @@ public class Database {
     private final HashMap<String, ReadWriteLock> channelsLocks;
     // key: username , value: user
     private final HashMap<String, User> users;
-    int nextMessageId = 0;
+    AtomicInteger nextMessageId;
 
     private static class SingletonHolder {
         private static Database db = new Database();
@@ -25,6 +26,7 @@ public class Database {
         channels = new HashMap<>();
         channelsLocks = new HashMap<>();
         users = new HashMap<>();
+        nextMessageId = new AtomicInteger(0);
     }
 
     public Set<User> getChannel(String channel) {
@@ -130,7 +132,7 @@ public class Database {
     }
 
     public int getNextMessageId(){
-        return nextMessageId++;
+        return nextMessageId.getAndIncrement();
     }
 
 }
