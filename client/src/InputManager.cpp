@@ -9,12 +9,11 @@ InputManager::InputManager() : handler(nullptr){}
 void InputManager::read(SocketListener &listener){
 
     string input;
-    bool allowInput = true;
-    while (allowInput){
+    while (1){
 
         // Get next command and parse it
         getline(std::cin,input);
-        if (!allowInput || input == "") continue;
+        if (input == "") continue;
         vector<string> args = Frame::split(input, ' ');
         string command = args[0];
 
@@ -26,6 +25,7 @@ void InputManager::read(SocketListener &listener){
             }
             ConnectionHandler *handler = login(args[1], args[2], args[3]);
             listener.setHandler(handler);
+            
         }
         else if (handler == nullptr){
             std::cout << "Client is not logged in to any user, please login." << std::endl;
@@ -41,7 +41,7 @@ void InputManager::read(SocketListener &listener){
             summary(args[1], args[2], args[3]);
         else if (command == "logout"){
             logout();
-            allowInput = false;
+            handler = nullptr;
         }
         else{
             std::cout << "Invalid command." << std::endl;

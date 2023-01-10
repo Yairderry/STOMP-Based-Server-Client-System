@@ -26,7 +26,6 @@ bool ConnectionHandler::getShouldTerminate(){
 
 void ConnectionHandler::terminate(){
 	shouldTerminate = true;
-	close();
 	std::cout << "Goodbye" << std::endl;
 }
 
