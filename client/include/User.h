@@ -22,8 +22,8 @@ class User
         Forum forum;
 
     public:
+        User();
         User(string&, string&);
-        User *clone();
 
         string getUsername();
         string getPassword();

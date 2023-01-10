@@ -1,7 +1,6 @@
 #include "../include/StompProtocol.h"
 #include "../include/Frame.h"
 #include "../include/ConnectionHandler.h"
-#include "../include/User.h"
 
 StompProtocol::StompProtocol() : handler(nullptr){}
 StompProtocol *StompProtocol::clone(){return new StompProtocol(*this);}
@@ -42,7 +41,6 @@ void StompProtocol::receipt(Frame &frame){
 
     if (action == "disconnect"){
         user.toggleConnected();
-        handler->setUser(nullptr);
         handler->terminate();
     }
     else if (action == "subscribe")

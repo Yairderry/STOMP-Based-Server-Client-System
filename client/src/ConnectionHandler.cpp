@@ -1,7 +1,5 @@
 #include "../include/ConnectionHandler.h"
 #include "../include/Frame.h"
-#include "../include/StompProtocol.h"
-#include "../include/User.h"
 
 using boost::asio::ip::tcp;
 
@@ -12,26 +10,50 @@ using std::endl;
 using std::string;
 
 ConnectionHandler::ConnectionHandler(string host, short port) : host_(host), port_(port), io_service_(),
-                                                                socket_(io_service_), user(nullptr), protocol(new StompProtocol()){
-	protocol->setHandler(this);
+                                                                socket_(io_service_), user(), protocol(StompProtocol()){
+	protocol.setHandler(this);
 }
 
 ConnectionHandler::~ConnectionHandler() {
-	delete user;
-	delete protocol;
 	close();
 }
 
-// copy constructor
-ConnectionHandler::ConnectionHandler(const ConnectionHandler &other) : host_(other.host_), port_(other.port_), io_service_(),
-                                                                socket_(io_service_), user(other.user->clone()), protocol(other.protocol->clone()){}
+// // copy constructor
+// ConnectionHandler::ConnectionHandler(const ConnectionHandler &other) : host_(other.host_), port_(other.port_), io_service_(),
+//                                                                 socket_(io_service_), user(other.user->clone()), protocol(other.protocol->clone()){}
 
-// move constructor
-ConnectionHandler::ConnectionHandler(ConnectionHandler &&other) noexcept : host_(other.host_), port_(other.port_), io_service_(),
-                                                                socket_(other.io_service_), user(other.user), protocol(other.protocol){
-	other.user = nullptr;
-    other.protocol = nullptr;
-}
+// // move constructor
+// ConnectionHandler::ConnectionHandler(ConnectionHandler &&other) noexcept : host_(other.host_), port_(other.port_), io_service_(),
+//                                                                 socket_(other.io_service_), user(other.user), protocol(other.protocol){
+// 	other.user = nullptr;
+//     other.protocol = nullptr;
+// }
+
+// ConnectionHandler &ConnectionHandler::operator=(const ConnectionHandler &other){ // copy assignment operator
+// 	if (this != &other) {
+//         host_= other.host_;
+//         port_ = other.port_;
+//         socket_ = other.socket_;
+//         *user = *other.user;
+// 		*protocol = *other.protocol;
+//     }
+//     return *this;
+// }
+// ConnectionHandler &ConnectionHandler::operator=(ConnectionHandler &&other) noexcept { // move assignment operator
+// 	host_ = other.host_;
+//     port_ = other.port_;
+//     socket_ = other.socket_;
+
+//     if (user) delete user;
+//     user = other.user;
+//     other.user = nullptr;
+
+// 	if (protocol) delete protocol;
+//     protocol = other.protocol;
+//     other.protocol = nullptr;
+
+//     return *this;
+// }
 
 bool ConnectionHandler::getShouldTerminate(){
 	return shouldTerminate;
@@ -42,24 +64,24 @@ void ConnectionHandler::terminate(){
 	std::cout << "Goodbye" << std::endl;
 }
 
-void ConnectionHandler::setUser(User *user){
+void ConnectionHandler::setUser(User &user){
 	this->user = user;
 }
 
 User &ConnectionHandler::getUser(){
-	return *user;
+	return user;
 }
 
 bool ConnectionHandler::isLoggedIn(){
-	return user != nullptr;
+	return user.getNextSID() != -1;
 }
 
-void ConnectionHandler::setProtocol(StompProtocol *protocol){
+void ConnectionHandler::setProtocol(StompProtocol &protocol){
 	this->protocol = protocol;
 }
 
 StompProtocol &ConnectionHandler::getProtocol(){
-	return *protocol;
+	return protocol;
 }
 
 bool ConnectionHandler::connect() {
@@ -156,5 +178,5 @@ void ConnectionHandler::close() {
 }
 
 void ConnectionHandler::protocolProccess(Frame &frame){
-	protocol->proccess(frame);
+	protocol.proccess(frame);
 }

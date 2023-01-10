@@ -10,9 +10,6 @@ void InputManager::read(SocketListener &listener){
 
     string input;
     while (1){
-
-        if (handler != nullptr && handler->getShouldTerminate())
-            handler = nullptr;
             
         // Get next command and parse it
         getline(std::cin,input);
@@ -20,6 +17,9 @@ void InputManager::read(SocketListener &listener){
         vector<string> args = Frame::split(input, ' ');
         string command = args[0];
 
+        if (handler != nullptr && handler->getShouldTerminate())
+            handler = nullptr;
+        
         // Create frame and act accordingly
         if (command == "login"){
             if (args.size() != 4){
@@ -57,7 +57,8 @@ ConnectionHandler* InputManager::login(string &host_port, string &username, stri
         handler = new ConnectionHandler(host_and_port[0], stoi(host_and_port[1]));
         if (handler->connect()){
             try{
-                handler->setUser(new User(username, password));
+                User newUser(username, password);
+                handler->setUser(newUser);
                 string version = "1.2";
                 ConnectFrame frame(version, host_port, username, password);
                 string line = frame.toString();
