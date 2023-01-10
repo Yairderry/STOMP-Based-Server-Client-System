@@ -13,10 +13,13 @@ public final class ConnectionsImpl<T> implements Connections<T> {
     AtomicInteger nextConnectionId = new AtomicInteger(0);
 
     @Override
-    public boolean send(int connectionId, T msg) {
+    public boolean send(int connectionId, T msg) {        
         if (connections.containsKey(connectionId)) {
-            connections.get(connectionId).send(msg);
-            return true;
+            ConnectionHandler<T> handler = connections.get(connectionId);
+            synchronized(handler){
+                handler.send(msg);
+                return true;
+            }
         }
         return false;
     }

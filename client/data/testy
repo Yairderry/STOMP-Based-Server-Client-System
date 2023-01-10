@@ -1,14 +1,14 @@
 Germany vs Japan
 Game stats:
 General stats:
-active: false
+active: true
 before halftime: false
 Germany stats:
 goals: 1
-possession: 51%
+possession: 90%
 Japan stats:
 goals: 2
-possession: 49%
+possession: 10%
 Game event reports:
 0 - kickoff:
 
@@ -48,6 +48,16 @@ GOOOOOOAAAAALLLL!!!! Can you believe Itakura's long ball from a free-kick in his
 5400 - final whistle:
 
 Well, what a way to kick off Group E! Germany sit at the bottom of the group following that defeat, while Japan are at the top with one win from one! Spain and Costa Rica are yet to play their corresponding fixture, but if the rest of the games are anything like this one, we're in for one hell of a treat, and a very competitive set of fixtures.
+
+
+0 - kickoff:
+
+The game has started! What an exciting evening!
+
+
+1980 - goal!!!!:
+
+GOOOAAALLL!!! Germany lead!!! Gundogan finally has success in the box as he steps up to take the penalty, sends Gonda the wrong way, and slots the ball into tne left-hand corner to put Germany 1-0 up! A needless penalty to concede from Japan's point of view, and after a bright start, the Samurai Blues trail!
 
 
 
