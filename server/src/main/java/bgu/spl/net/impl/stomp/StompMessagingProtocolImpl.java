@@ -86,6 +86,7 @@ public class StompMessagingProtocolImpl implements StompMessagingProtocol<String
 
             // Assign connected user
             this.connectedUser = db.getUser(frame.getHeader("login"));
+            if (!connectedUser.getConnected()) connectedUser.toggleConnected();
         }
     }
 
