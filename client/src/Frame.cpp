@@ -41,7 +41,6 @@ string Frame::toString() const {
         frame += header.first + ":" + header.second + '\n';
     frame += '\n'; // gap
     frame += body == "" ? "" : body + '\n';
-    frame += endOfLine;
 
     return frame;
 }

@@ -14,7 +14,6 @@ protected:
     string command;
     map<string, string> headers;
     string body;
-    char endOfLine = '\0';
 
 public:
     Frame(string, map<string, string>, string);

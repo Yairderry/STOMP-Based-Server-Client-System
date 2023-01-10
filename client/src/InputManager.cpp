@@ -52,7 +52,7 @@ void InputManager::login(string &host_port, string &username, string &password){
         string version = "1.2";
         ConnectFrame frame(version, host_port, username, password);
         string line = frame.toString();
-        handler->sendLine(line);
+        handler->sendFrameAscii(line, '\0');
     }
     catch (const std::exception& e){
         std::cout << "Could not connect to server." << std::endl;
@@ -73,7 +73,7 @@ void InputManager::join(string &game_name){
 
     SubscribeFrame frame(game_name, subscriptionId, receiptId);
     string line = frame.toString();
-    handler->sendLine(line);
+    handler->sendFrameAscii(line, '\0');
 }
 
 void InputManager::exit(string &game_name){
@@ -91,7 +91,7 @@ void InputManager::exit(string &game_name){
 
     UnsubscribeFrame frame(subscriptionId, receiptId);
     string line = frame.toString();
-    handler->sendLine(line);
+    handler->sendFrameAscii(line, '\0');
 }
 
 void InputManager::report(string &file_path){
@@ -109,7 +109,7 @@ void InputManager::report(string &file_path){
         string receiptId = "report-" + std::to_string(user.getNextRID());
         SendFrame frame(destination, receiptId, body);
         string line = frame.toString();
-        handler->sendLine(line);
+        handler->sendFrameAscii(line, '\0');
     }
 }
 
@@ -169,6 +169,6 @@ void InputManager::logout(){
     string receiptId = "disconnect-" + std::to_string(user.getNextRID());
     DisconnectFrame frame(receiptId);
     string line = frame.toString();
-    handler->sendLine(line);
+    handler->sendFrameAscii(line, '\0');
     }
 
