@@ -71,7 +71,7 @@ ConnectionHandler* InputManager::login(string &host_port, string &username, stri
         }
     }
     else{
-        std::cout << "The client is already logged in, log out before trying again" << std::endl;
+        std::cout << "The client is already logged in, log out before trying again." << std::endl;
         return handler;
     }
     return nullptr;
@@ -85,7 +85,7 @@ void InputManager::join(string &game_name){
     string receiptId = "subscribe-" + game_name + "-" + std::to_string(user.getNextRID());
     bool succeeded = user.addSubscription(game_name, std::stoi(subscriptionId));
     if (!succeeded){
-        std::cout << "User already subscribed to this topic" << std::endl;
+        std::cout << "User already subscribed to this topic." << std::endl;
         return;
     }
 
@@ -103,7 +103,7 @@ void InputManager::exit(string &game_name){
 
     bool succeeded = user.removeSubscription(game_name);
     if (!succeeded){
-        std::cout << "User is not subscribed to this topic" << std::endl;
+        std::cout << "User is not subscribed to this topic." << std::endl;
         return;
     }
 
@@ -133,7 +133,7 @@ void InputManager::report(string &file_path){
 void InputManager::summary(string &game_name, string &reporter_user, string &file_path){
     User &user = handler->getUser();
     if (user.getSubscriptionId(game_name) == -1){
-        std::cout << "User is not subscribed to this topic" << std::endl;
+        std::cout << "User is not subscribed to this topic." << std::endl;
         return;
     }
     vector<Event> events = vector<Event>{};

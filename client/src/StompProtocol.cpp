@@ -20,7 +20,7 @@ void StompProtocol::proccess(Frame &frame){
 void StompProtocol::connected(Frame &frame){
     User &user = handler->getUser();
     user.toggleConnected();
-    std::cout << "Login Successful" << std::endl;
+    std::cout << "Login Successful." << std::endl;
 }
 
 void StompProtocol::error(Frame &frame){
@@ -44,9 +44,9 @@ void StompProtocol::receipt(Frame &frame){
         handler->terminate();
     }
     else if (action == "subscribe")
-        std::cout << "Joined channel " << receipt_args[1] << std::endl;
+        std::cout << "Joined channel " << receipt_args[1] << "." << std::endl;
     else if (action == "unsubscribe")
-        std::cout << "Exited channel " << receipt_args[1] << std::endl;
+        std::cout << "Exited channel " << receipt_args[1] << "." << std::endl;
 }
 
 void StompProtocol::message(Frame &frame){
