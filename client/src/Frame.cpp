@@ -38,7 +38,7 @@ string Frame::toString() const {
     for (auto &header : headers)
         frame += header.first + ":" + header.second + '\n';
     frame += '\n'; // gap
-    frame += body == "" ? "" : body + '\n';
+    frame += body == "" ? "" : body;
 
     return frame;
 }

@@ -46,7 +46,7 @@ public class Frame {
         for (String key : headers.keySet())
             frame.append(key).append(":").append(headers.get(key)).append("\n");
         frame.append("\n"); // gap
-        frame.append(body.equals("") ? "" : body + "\n").append(endOfLine);
+        frame.append(body.equals("") ? "" : body).append(endOfLine);
         return frame.toString();
     }
 

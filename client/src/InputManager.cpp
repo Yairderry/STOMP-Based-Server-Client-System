@@ -120,7 +120,6 @@ void InputManager::report(string &file_path){
     
     string destination = game.team_a_name + "_" + game.team_b_name;
     vector<Event> events = game.events;
-    sortEvents(events);
 
     for (Event event : events){
         string body = "user: " + user.getUsername() + "\n" + event.toString();

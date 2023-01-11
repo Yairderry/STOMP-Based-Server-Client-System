@@ -53,5 +53,3 @@ struct names_and_events {
 
 // function that parses the json file and returns a names_and_events object
 names_and_events parseEventsFile(std::string json_path);
-
-void sortEvents(vector<Event> &);

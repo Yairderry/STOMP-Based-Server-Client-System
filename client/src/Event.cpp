@@ -179,13 +179,3 @@ names_and_events parseEventsFile(std::string json_path)
 
     return events_and_names;
 }
-
-void sortEvents(vector<Event> &events){
-    // std::sort(events.begin(), events.end(), [](const Event & a, const Event & b) -> bool{
-    //     map<string, string> a_updates = a.get_game_updates();
-    //     map<string, string> b_updates = b.get_game_updates();
-
-    //     bool event_a_beforeHT = a.get_game_updates["before halftime"]
-    // });
-    std::sort(events.begin(), events.end(), [](const Event & a, const Event & b) -> bool{ return a.get_time() < b.get_time(); });
-}
