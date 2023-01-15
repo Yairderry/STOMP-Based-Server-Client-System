@@ -10,65 +10,61 @@ using boost::asio::ip::tcp;
 using std::string;
 
 class Frame;
-// class StompProtocol;
-// class User;
 
 class ConnectionHandler {
 private:
-	const std::string host_;
-	const short port_;
-	boost::asio::io_service io_service_;   // Provides core I/O functionality
-	tcp::socket socket_;
-	User user;
-	StompProtocol protocol;
-	bool shouldTerminate = false;
+    const std::string host_;
+    const short port_;
+    boost::asio::io_service io_service_;   // Provides core I/O functionality
+    tcp::socket socket_;
+    User user;
+    StompProtocol protocol;
+    bool shouldTerminate = false;
 
 public:
-	ConnectionHandler(std::string host, short port);
+    ConnectionHandler(std::string host, short port);
 
-	virtual ~ConnectionHandler(); // destructor
+    virtual ~ConnectionHandler(); // destructor
 
-	bool getShouldTerminate();
-	void terminate();
+    bool getShouldTerminate();
 
-	void setUser(User &);
-	User &getUser();
-	bool isLoggedIn();
+    void terminate();
 
-	void setProtocol(StompProtocol &);
-	StompProtocol &getProtocol();
+    void setUser(User &);
 
-	// Connect to the remote machine
-	bool connect();
+    User &getUser();
 
-	// Read a fixed number of bytes from the server - blocking.
-	// Returns false in case the connection is closed before bytesToRead bytes can be read.
-	bool getBytes(char bytes[], unsigned int bytesToRead);
+    // Connect to the remote machine
+    bool connect();
 
-	// Send a fixed number of bytes from the client - blocking.
-	// Returns false in case the connection is closed before all the data is sent.
-	bool sendBytes(const char bytes[], int bytesToWrite);
+    // Read a fixed number of bytes from the server - blocking.
+    // Returns false in case the connection is closed before bytesToRead bytes can be read.
+    bool getBytes(char bytes[], unsigned int bytesToRead);
 
-	// Read an ascii line from the server
-	// Returns false in case connection closed before a newline can be read.
-	bool getLine(std::string &line);
+    // Send a fixed number of bytes from the client - blocking.
+    // Returns false in case the connection is closed before all the data is sent.
+    bool sendBytes(const char bytes[], int bytesToWrite);
 
-	// Send an ascii line from the server
-	// Returns false in case connection closed before all the data is sent.
-	bool sendLine(std::string &line);
+    // Read an ascii line from the server
+    // Returns false in case connection closed before a newline can be read.
+    bool getLine(std::string &line);
 
-	// Get Ascii data from the server until the delimiter character
-	// Returns false in case connection closed before null can be read.
-	bool getFrameAscii(std::string &frame, char delimiter);
+    // Send an ascii line from the server
+    // Returns false in case connection closed before all the data is sent.
+    bool sendLine(std::string &line);
 
-	// Send a message to the remote host.
-	// Returns false in case connection is closed before all the data is sent.
-	bool sendFrameAscii(const std::string &frame, char delimiter);
+    // Get Ascii data from the server until the delimiter character
+    // Returns false in case connection closed before null can be read.
+    bool getFrameAscii(std::string &frame, char delimiter);
 
-	// Close down the connection properly.
-	void close();
+    // Send a message to the remote host.
+    // Returns false in case connection is closed before all the data is sent.
+    bool sendFrameAscii(const std::string &frame, char delimiter);
 
-	// Process by STOMP protocol
-	void protocolProccess(Frame &frame);
+    // Close down the connection properly.
+    void close();
 
-}; //class ConnectionHandler
+    // Process by STOMP protocol
+    bool protocolProcess(Frame &frame);
+
+};

@@ -8,8 +8,7 @@ using std::string;
 using std::map;
 using std::vector;
 
-class Frame
-{
+class Frame {
 protected:
     string command;
     map<string, string> headers;
@@ -17,37 +16,42 @@ protected:
 
 public:
     Frame(string, map<string, string>, string);
-    explicit Frame(const string&);
+
+    explicit Frame(const string &);
+
     string toString() const;
+
     string getCommand() const;
-    map<string,string>  getHeaders() const;
-    string getHeader(const string&) ;
+
+    string getHeader(const string &);
+
     string getBody() const;
-    static vector<string> split(const string&, char);
+
+    static vector<string> split(const string &, char);
 
 };
 
-class ConnectFrame : public Frame{
+class ConnectFrame : public Frame {
 public:
     ConnectFrame(string &acceptVersion, string &host, string &login, string &passcode);
 };
 
-class DisconnectFrame : public Frame{
+class DisconnectFrame : public Frame {
 public:
     DisconnectFrame(string &receiptId);
 };
 
-class SubscribeFrame : public Frame{
+class SubscribeFrame : public Frame {
 public:
     SubscribeFrame(string &destination, string &subscribeId, string &receiptId);
 };
 
-class UnsubscribeFrame : public Frame{
+class UnsubscribeFrame : public Frame {
 public:
     UnsubscribeFrame(string &subscribeId, string &receiptId);
 };
 
-class SendFrame : public Frame{
+class SendFrame : public Frame {
 public:
     SendFrame(string &destination, string &receiptId, string &body);
 };

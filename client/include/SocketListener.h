@@ -8,15 +8,16 @@ using std::string;
 
 class ConnectionHandler;
 
-class SocketListener
-{
+class SocketListener {
 private:
     ConnectionHandler *handler;
-    std::mutex & mutex;
-    std::condition_variable & cv;
+    std::mutex &mutex;
+    std::condition_variable &cv;
 
 public:
-    SocketListener(std::mutex&, std::condition_variable&);
+    SocketListener(std::mutex &, std::condition_variable &);
+
     void run();
+
     void setHandler(ConnectionHandler *);
 };

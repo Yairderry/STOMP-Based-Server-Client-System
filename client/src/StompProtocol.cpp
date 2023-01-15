@@ -2,36 +2,39 @@
 #include "../include/Frame.h"
 #include "../include/ConnectionHandler.h"
 
-StompProtocol::StompProtocol() : handler(nullptr){}
-StompProtocol *StompProtocol::clone(){return new StompProtocol(*this);}
+StompProtocol::StompProtocol() : handler(nullptr) {}
 
-void StompProtocol::proccess(Frame &frame){
+bool StompProtocol::process(Frame &frame) {
     string command = frame.getCommand();
     if (command == "CONNECTED")
-        connected(frame);
+        return connected();
     else if (command == "ERROR")
-        error(frame);
+        return error(frame);
     else if (command == "RECEIPT")
-        receipt(frame);
+        return receipt(frame);
     else if (command == "MESSAGE")
-        message(frame);
+        return message(frame);
+    return false;
 }
 
-void StompProtocol::connected(Frame &frame){
+bool StompProtocol::connected() {
     User &user = handler->getUser();
     user.toggleConnected();
     std::cout << "Login Successful." << std::endl;
+    return true;
 }
 
-void StompProtocol::error(Frame &frame){
+bool StompProtocol::error(Frame &frame) {
     std::cout << frame.toString() << std::endl;
 
-    // handler->setUser(nullptr);
     handler->terminate();
-    handler = nullptr;    
+    if (handler) delete handler;
+
+    return false;
+
 }
 
-void StompProtocol::receipt(Frame &frame){
+bool StompProtocol::receipt(Frame &frame) {
     User &user = handler->getUser();
     string receiptId = frame.getHeader("receipt-id");
 
@@ -39,32 +42,32 @@ void StompProtocol::receipt(Frame &frame){
 
     string action = receipt_args[0];
 
-    if (action == "disconnect"){
+    if (action == "disconnect") {
         user.toggleConnected();
         handler->terminate();
-    }
-    else if (action == "subscribe")
+        if (handler) delete handler;
+        return false;
+    } else if (action == "subscribe")
         std::cout << "Joined channel " << receipt_args[1] << "." << std::endl;
     else if (action == "unsubscribe")
         std::cout << "Exited channel " << receipt_args[1] << "." << std::endl;
+    return true;
 }
 
-void StompProtocol::message(Frame &frame){
+bool StompProtocol::message(Frame &frame) {
     User &user = handler->getUser();
     string game_name = user.getChannelById(std::stoi(frame.getHeader("subscription")));
     vector<string> body_lines = Frame::split(frame.getBody(), '\n');
     string first_line = body_lines[0];
-    string reporter_user = first_line.substr(first_line.find(":") + 2, first_line.size()-1);
+    string reporter_user = first_line.substr(first_line.find(':') + 2, first_line.size() - 1);
 
     Event reported_event(frame.getBody());
 
     user.addEvent(reported_event, game_name, reporter_user);
+
+    return true;
 }
 
-void StompProtocol::setHandler(ConnectionHandler *handler){
-    this->handler = handler;
-}
-
-ConnectionHandler &StompProtocol::getHandler(){
-    return *handler;
+void StompProtocol::setHandler(ConnectionHandler *_handler) {
+    this->handler = _handler;
 }

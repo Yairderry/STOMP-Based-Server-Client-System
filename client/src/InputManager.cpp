@@ -1,62 +1,58 @@
 #include "../include/InputManager.h"
 #include "../include/ConnectionHandler.h"
 #include "../include/Frame.h"
-#include "../include/User.h"
 #include "../include/SocketListener.h"
 
-InputManager::InputManager() : handler(nullptr){}
+InputManager::InputManager() : handler(nullptr) {}
 
-void InputManager::read(SocketListener &listener){
+void InputManager::read(SocketListener &listener) {
 
+    while (true) {
     string input;
-    while (1){
-            
+
         // Get next command and parse it
-        getline(std::cin,input);
-        if (input == "") continue;
+        getline(std::cin, input);
+        if (input.empty()) continue;
         vector<string> args = Frame::split(input, ' ');
         string command = args[0];
 
         if (handler != nullptr && handler->getShouldTerminate())
             handler = nullptr;
-        
+
         // Create frame and act accordingly
-        if (command == "login"){
-            if (args.size() != 4){
+        if (command == "login") {
+            if (args.size() != 4) {
                 std::cout << "Could not connect to server." << std::endl;
                 continue;
             }
-            ConnectionHandler *handler = login(args[1], args[2], args[3]);
-            listener.setHandler(handler);
-            
-        }
-        else if (handler == nullptr){
+            ConnectionHandler *_handler = login(args[1], args[2], args[3]);
+            listener.setHandler(_handler);
+
+        } else if (handler == nullptr) {
             std::cout << "Client is not logged in to any user, please login." << std::endl;
             continue;
-        }
-        else if (command == "join")
+        } else if (command == "join")
             join(args[1]);
         else if (command == "exit")
             exit(args[1]);
         else if (command == "report")
             report(args[1]);
-        else if (command == "summary") 
+        else if (command == "summary")
             summary(args[1], args[2], args[3]);
-        else if (command == "logout"){
+        else if (command == "logout") {
             logout();
             handler = nullptr;
-        }
-        else
+        } else
             std::cout << "Invalid command." << std::endl;
-    } 
+    }
 }
 
-ConnectionHandler* InputManager::login(string &host_port, string &username, string &password){
-    if (handler == nullptr){
+ConnectionHandler *InputManager::login(string &host_port, string &username, string &password) {
+    if (handler == nullptr) {
         vector<string> host_and_port = Frame::split(host_port, ':');
         handler = new ConnectionHandler(host_and_port[0], stoi(host_and_port[1]));
-        if (handler->connect()){
-            try{
+        if (handler->connect()) {
+            try {
                 User newUser(username, password);
                 handler->setUser(newUser);
                 string version = "1.2";
@@ -65,26 +61,25 @@ ConnectionHandler* InputManager::login(string &host_port, string &username, stri
                 handler->sendFrameAscii(line, '\0');
                 return handler;
             }
-            catch (const std::exception& e){
+            catch (const std::exception &e) {
                 std::cout << "Could not connect to server." << std::endl;
             }
         }
-    }
-    else{
+    } else {
         std::cout << "The client is already logged in, log out before trying again." << std::endl;
         return handler;
     }
     return nullptr;
 }
 
-void InputManager::join(string &game_name){
+void InputManager::join(string &game_name) {
     User &user = handler->getUser();
     if (!user.getConnected()) return;
-    
+
     string subscriptionId = std::to_string(user.getNextSID());
     string receiptId = "subscribe-" + game_name + "-" + std::to_string(user.getNextRID());
     bool succeeded = user.addSubscription(game_name, std::stoi(subscriptionId));
-    if (!succeeded){
+    if (!succeeded) {
         std::cout << "User already subscribed to this topic." << std::endl;
         return;
     }
@@ -94,7 +89,7 @@ void InputManager::join(string &game_name){
     handler->sendFrameAscii(line, '\0');
 }
 
-void InputManager::exit(string &game_name){
+void InputManager::exit(string &game_name) {
     User &user = handler->getUser();
     if (!user.getConnected()) return;
 
@@ -102,7 +97,7 @@ void InputManager::exit(string &game_name){
     string receiptId = "unsubscribe-" + game_name + "-" + std::to_string(user.getNextRID());
 
     bool succeeded = user.removeSubscription(game_name);
-    if (!succeeded){
+    if (!succeeded) {
         std::cout << "User is not subscribed to this topic." << std::endl;
         return;
     }
@@ -112,16 +107,16 @@ void InputManager::exit(string &game_name){
     handler->sendFrameAscii(line, '\0');
 }
 
-void InputManager::report(string &file_path){
+void InputManager::report(string &file_path) {
     User &user = handler->getUser();
     if (!user.getConnected()) return;
 
     names_and_events game = parseEventsFile(file_path);
-    
+
     string destination = game.team_a_name + "_" + game.team_b_name;
     vector<Event> events = game.events;
 
-    for (Event event : events){
+    for (Event event: events) {
         string body = "user: " + user.getUsername() + "\n" + event.toString();
         string receiptId = "report-" + std::to_string(user.getNextRID());
         SendFrame frame(destination, receiptId, body);
@@ -130,16 +125,16 @@ void InputManager::report(string &file_path){
     }
 }
 
-void InputManager::summary(string &game_name, string &reporter_user, string &file_path){
+void InputManager::summary(string &game_name, string &reporter_user, string &file_path) {
     User &user = handler->getUser();
-    if (user.getSubscriptionId(game_name) == -1){
+    if (user.getSubscriptionId(game_name) == -1) {
         std::cout << "User is not subscribed to this topic." << std::endl;
         return;
     }
     vector<Event> events = vector<Event>{};
     user.getEvents(events, game_name, reporter_user);
 
-    string output = "";
+    string output;
     vector<string> names = Frame::split(game_name, '_');
 
     output += names[0] + " vs " + names[1] + '\n' + "Game stats:\n";
@@ -149,27 +144,25 @@ void InputManager::summary(string &game_name, string &reporter_user, string &fil
     map<string, string> team_b_stats;
     string game_events = "Game event reports:\n";
 
-    for (unsigned int i = 0; i < events.size(); i++){
-        Event &event = events[i];
+    for (auto &event: events) {
+        game_events += event.summarize();
 
-        game_events +=  event.summarize();
-
-        for (auto pair : event.get_game_updates())
+        for (auto pair: event.get_game_updates())
             general_stats[pair.first] = pair.second;
-        for (auto pair : event.get_team_a_updates())
+        for (auto pair: event.get_team_a_updates())
             team_a_stats[pair.first] = pair.second;
-        for (auto pair : event.get_team_b_updates())
-            team_b_stats[pair.first] = pair.second;    
+        for (auto pair: event.get_team_b_updates())
+            team_b_stats[pair.first] = pair.second;
     }
 
     output += "General stats:\n";
-    for (auto pair : general_stats)
+    for (auto pair: general_stats)
         output += pair.first + ": " + pair.second + '\n';
     output += names[0] + " stats:\n";
-    for (auto pair : team_a_stats)
+    for (auto pair: team_a_stats)
         output += pair.first + ": " + pair.second + '\n';
     output += names[1] + " stats:\n";
-    for (auto pair : team_b_stats)
+    for (auto pair: team_b_stats)
         output += pair.first + ": " + pair.second + '\n';
 
     output += game_events;
@@ -179,7 +172,7 @@ void InputManager::summary(string &game_name, string &reporter_user, string &fil
     outputFile.close();
 }
 
-void InputManager::logout(){
+void InputManager::logout() {
     User &user = handler->getUser();
     if (!user.getConnected()) return;
 
@@ -187,9 +180,5 @@ void InputManager::logout(){
     DisconnectFrame frame(receiptId);
     string line = frame.toString();
     handler->sendFrameAscii(line, '\0');
-}
-
-void InputManager::setHandler(ConnectionHandler *handler){
-    this->handler = handler;
 }
 

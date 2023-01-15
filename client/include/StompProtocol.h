@@ -1,22 +1,25 @@
 #pragma once
 
 class Frame;
+
 class ConnectionHandler;
 
-class StompProtocol
-{
+class StompProtocol {
 private:
     ConnectionHandler *handler;
 public:
     StompProtocol();
-    StompProtocol *clone();
-    
-    void proccess(Frame &frame);
-    void connected(Frame &frame);
-    void error(Frame &frame);
-    void receipt(Frame &frame);
-    void message(Frame &frame);
+
+    bool process(Frame &frame);
+
+    bool connected();
+
+    bool error(Frame &frame);
+
+    bool receipt(Frame &frame);
+
+    bool message(Frame &frame);
+
     void setHandler(ConnectionHandler *);
-    ConnectionHandler &getHandler();
 
 };

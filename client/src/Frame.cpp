@@ -21,34 +21,30 @@ Frame::Frame(const string &frame) : command(""), headers(map<string, string>{}),
         vector<string> header = split(lines[i], ':');
         headers[header[0]] = header[1];
     }
-    if (startOfBody != -1){
+    if (startOfBody != -1) {
         for (int i = startOfBody; i < (int) lines.size(); i++) {
             body += lines[i];
             if (i != (int) lines.size() - 1)
                 body += '\n';
         }
     }
-    
+
 }
 
 
 string Frame::toString() const {
     string frame = command + '\n';
 
-    for (auto &header : headers)
+    for (auto &header: headers)
         frame += header.first + ":" + header.second + '\n';
     frame += '\n'; // gap
-    frame += body == "" ? "" : body;
+    frame += body.empty() ? "" : body;
 
     return frame;
 }
 
 string Frame::getCommand() const {
     return command;
-}
-
-map<string, string> Frame::getHeaders() const {
-    return headers;
 }
 
 string Frame::getHeader(const string &header) {
@@ -71,29 +67,35 @@ vector<string> Frame::split(const string &stringToSplit, char splitChar) {
 }
 
 
-ConnectFrame::ConnectFrame(string &acceptVersion, string &host, string &login, string &passcode) : Frame("CONNECT", map<string, string>{}, ""){
+ConnectFrame::ConnectFrame(string &acceptVersion, string &host, string &login, string &passcode) : Frame("CONNECT",
+                                                                                                         map<string, string>{},
+                                                                                                         "") {
     headers["accept-version"] = acceptVersion;
     headers["host"] = host;
     headers["login"] = login;
     headers["passcode"] = passcode;
 }
 
-DisconnectFrame::DisconnectFrame(string &receiptId) : Frame("DISCONNECT", map<string, string>{}, ""){
+DisconnectFrame::DisconnectFrame(string &receiptId) : Frame("DISCONNECT", map<string, string>{}, "") {
     headers["receipt"] = receiptId;
 }
 
-SubscribeFrame::SubscribeFrame(string &destination, string &subscribeId, string &receiptId) : Frame("SUBSCRIBE", map<string, string>{}, ""){
+SubscribeFrame::SubscribeFrame(string &destination, string &subscribeId, string &receiptId) : Frame("SUBSCRIBE",
+                                                                                                    map<string, string>{},
+                                                                                                    "") {
     headers["destination"] = destination;
     headers["id"] = subscribeId;
     headers["receipt"] = receiptId;
 }
 
-UnsubscribeFrame::UnsubscribeFrame(string &subscribeId, string &receiptId) : Frame("UNSUBSCRIBE", map<string, string>{}, ""){
+UnsubscribeFrame::UnsubscribeFrame(string &subscribeId, string &receiptId) : Frame("UNSUBSCRIBE", map<string, string>{},
+                                                                                   "") {
     headers["id"] = subscribeId;
     headers["receipt"] = receiptId;
 }
 
-SendFrame::SendFrame(string &destination, string &receiptId, string &body) : Frame("SEND", map<string, string>{}, body){
+SendFrame::SendFrame(string &destination, string &receiptId, string &body) : Frame("SEND", map<string, string>{},
+                                                                                   body) {
     headers["destination"] = destination;
     headers["receipt"] = receiptId;
 }

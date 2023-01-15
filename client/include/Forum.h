@@ -4,8 +4,6 @@
 #include <string>
 #include "Event.h"
 
-// class Frame;
-// class ConnectionHandler;
 using std::map;
 using std::vector;
 using std::string;

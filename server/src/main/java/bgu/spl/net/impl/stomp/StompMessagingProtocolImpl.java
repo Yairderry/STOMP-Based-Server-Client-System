@@ -29,11 +29,6 @@ public class StompMessagingProtocolImpl implements StompMessagingProtocol<String
     public void process(String message) {
         try {
             Frame frame = new Frame(message.trim());
-
-            // System.out.println("/////////////Received Frame/////////////");
-            // System.out.println(frame);
-            // System.out.println("/////////////End Received Frame/////////");
-
             String errorMessage = "Invalid command.";
             switch (frame.getCommand()) {
                 case "CONNECT":
